@@ -1,0 +1,2455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inderpal Life Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #000;
+      --panel: rgba(10, 10, 11, 0.96);
+      --panel-strong: #050506;
+      --panel-soft: rgba(255, 255, 255, 0.045);
+      --line: rgba(255, 255, 255, 0.12);
+      --line-strong: rgba(255, 255, 255, 0.24);
+      --text: #fff;
+      --muted: #a3a3a3;
+      --muted-2: #6e6e6e;
+      --white: #f7f7f7;
+      --yellow: #d8b64b;
+      --red: #ef5b68;
+      --blue: #b9c7dd;
+      --violet: #d4c8f4;
+      --cyan: #d8d8d8;
+      --orange: #caa171;
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.72);
+      --radius: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-height: 100%;
+      background:
+        radial-gradient(circle at 50% -18%, rgba(255, 255, 255, 0.08), transparent 34rem),
+        #000;
+      color: var(--text);
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--text);
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+    }
+
+    .app {
+      width: min(1480px, 100%);
+      margin: 0 auto;
+      padding: 0 24px 40px;
+    }
+
+    body.auth-locked {
+      overflow: hidden;
+    }
+
+    body.auth-locked .app,
+    body.auth-locked .modal {
+      display: none;
+    }
+
+    .login-gate {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background:
+        radial-gradient(circle at 50% -18%, rgba(255, 255, 255, 0.08), transparent 34rem),
+        #000;
+    }
+
+    .login-gate[hidden] {
+      display: none;
+    }
+
+    .login-card {
+      width: min(430px, 100%);
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius);
+      background: rgba(10, 10, 11, 0.98);
+      box-shadow: var(--shadow);
+      padding: 24px;
+    }
+
+    .login-card .mark {
+      margin-bottom: 18px;
+    }
+
+    .login-title {
+      margin: 0 0 8px;
+      font-size: clamp(1.8rem, 5vw, 2.6rem);
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+
+    .login-error {
+      min-height: 22px;
+      margin: 10px 0 0;
+      color: var(--red);
+      font-size: 0.88rem;
+      font-weight: 800;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      margin: 0 -24px;
+      padding: 18px 24px 14px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(0, 0, 0, 0.88);
+      backdrop-filter: blur(22px);
+    }
+
+    .topbar-inner {
+      width: min(1480px, 100%);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 18px;
+      align-items: center;
+    }
+
+    .brand {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      min-width: 0;
+    }
+
+    .mark {
+      width: 48px;
+      height: 48px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: var(--radius);
+      background: #f5f5f5;
+      box-shadow: 0 14px 40px rgba(255, 255, 255, 0.06);
+      display: grid;
+      place-items: center;
+      color: #050505;
+      font-weight: 900;
+      letter-spacing: 0;
+      flex: 0 0 auto;
+    }
+
+    .title-stack {
+      min-width: 0;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.35rem, 1.8vw, 2.2rem);
+      line-height: 1.04;
+      letter-spacing: 0;
+      font-weight: 900;
+    }
+
+    .date-line {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 0.92rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .header-stats {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .pill {
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 999px;
+      padding: 9px 12px;
+      color: var(--text);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 38px;
+      white-space: nowrap;
+    }
+
+    .pill strong {
+      font-weight: 800;
+    }
+
+    .icon-button {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text);
+      display: inline-grid;
+      place-items: center;
+      transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+    }
+
+    .icon-button:hover {
+      transform: translateY(-1px);
+      border-color: rgba(255, 255, 255, 0.28);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .settings-svg {
+      width: 19px;
+      height: 19px;
+      stroke: currentColor;
+      stroke-width: 2;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin: 24px 0;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: thin;
+    }
+
+    .tab-button {
+      position: relative;
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      min-height: 42px;
+      padding: 0 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.045);
+      color: var(--muted);
+      font-weight: 800;
+      transition: color 180ms ease, background 180ms ease, border-color 180ms ease;
+    }
+
+    .tab-button.active {
+      color: var(--text);
+      border-color: rgba(255, 255, 255, 0.42);
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .tab-button .count {
+      min-width: 23px;
+      height: 23px;
+      padding: 0 7px;
+      border-radius: 999px;
+      display: inline-grid;
+      place-items: center;
+      color: #050505;
+      background: var(--white);
+      font-size: 0.76rem;
+      font-weight: 900;
+    }
+
+    .tab-panel {
+      display: none;
+      animation: enter 260ms ease both;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    @keyframes enter {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .panel-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    h2,
+    h3 {
+      margin: 0;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      font-size: clamp(1.4rem, 2.1vw, 2.3rem);
+      font-weight: 900;
+    }
+
+    h3 {
+      font-size: 1rem;
+      font-weight: 850;
+    }
+
+    .last-updated {
+      color: var(--muted-2);
+      font-size: 0.82rem;
+      white-space: nowrap;
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .grid.two {
+      grid-template-columns: minmax(0, 1fr) minmax(320px, 0.52fr);
+    }
+
+    .grid.three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .grid.four {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      padding: 18px;
+      min-width: 0;
+    }
+
+    .card.compact {
+      padding: 14px;
+    }
+
+    .hero-card {
+      min-height: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+      background: var(--panel-strong);
+    }
+
+    .kicker {
+      color: var(--muted);
+      text-transform: uppercase;
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      font-weight: 900;
+    }
+
+    .big-number {
+      font-size: clamp(2rem, 4.4vw, 4.2rem);
+      line-height: 0.92;
+      font-weight: 900;
+      letter-spacing: 0;
+      margin: 10px 0 8px;
+    }
+
+    .subtle {
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      align-items: end;
+    }
+
+    label {
+      display: grid;
+      gap: 7px;
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 800;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      color: var(--text);
+      background: rgba(5, 9, 13, 0.7);
+      min-height: 42px;
+      padding: 10px 12px;
+      outline: none;
+      transition: border-color 150ms ease, background 150ms ease, box-shadow 150ms ease;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: rgba(255, 255, 255, 0.68);
+      box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.08);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 42px;
+    }
+
+    select option {
+      background: #121922;
+      color: var(--text);
+    }
+
+    .primary,
+    .secondary,
+    .danger,
+    .chip {
+      min-height: 42px;
+      border-radius: var(--radius);
+      padding: 0 14px;
+      font-weight: 850;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: transform 150ms ease, filter 150ms ease, border-color 150ms ease, background 150ms ease;
+    }
+
+    .primary {
+      color: #050505;
+      background: var(--white);
+    }
+
+    .secondary,
+    .chip {
+      color: var(--text);
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .danger {
+      color: #fff;
+      border: 1px solid rgba(255, 94, 114, 0.35);
+      background: rgba(255, 94, 114, 0.13);
+    }
+
+    .primary:hover,
+    .secondary:hover,
+    .danger:hover,
+    .chip:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.05);
+    }
+
+    .chip.active {
+      color: #050505;
+      border-color: transparent;
+      background: var(--white);
+    }
+
+    .habits-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    .habit-card {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 10px 12px;
+      background: rgba(255, 255, 255, 0.032);
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) minmax(120px, 190px) auto;
+      gap: 10px;
+      align-items: center;
+      min-height: 54px;
+    }
+
+    .habit-card.done {
+      border-color: rgba(255, 255, 255, 0.32);
+      background: rgba(255, 255, 255, 0.07);
+    }
+
+    .habit-top {
+      min-width: 0;
+      position: relative;
+    }
+
+    .habit-name {
+      font-weight: 900;
+      font-size: 1rem;
+    }
+
+    .habit-target {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 0.74rem;
+      line-height: 1.35;
+    }
+
+    .check-toggle,
+    .check-indicator {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      border: 1px solid var(--line-strong);
+      background: rgba(255, 255, 255, 0.045);
+      color: transparent;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      font-size: 0.9rem;
+      font-weight: 900;
+    }
+
+    .check-toggle.active,
+    .check-indicator.active {
+      color: #050505;
+      background: var(--white);
+      border-color: var(--white);
+    }
+
+    .habit-inputs {
+      position: relative;
+      display: grid;
+      gap: 8px;
+    }
+
+    .habit-inputs input {
+      min-height: 36px;
+      padding: 7px 10px;
+    }
+
+    .date-controls {
+      display: grid;
+      grid-template-columns: auto minmax(150px, 1fr) auto auto;
+      gap: 8px;
+      align-items: end;
+      min-width: min(100%, 500px);
+    }
+
+    .date-controls label {
+      min-width: 150px;
+    }
+
+    .canvas-wrap {
+      position: relative;
+      width: 100%;
+      min-height: 280px;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 280px;
+    }
+
+    .chart-short canvas {
+      height: 230px;
+    }
+
+    .progress {
+      width: 100%;
+      height: 13px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--line);
+    }
+
+    .progress > span {
+      display: block;
+      height: 100%;
+      width: 0%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #777, var(--white));
+      transition: width 260ms ease;
+    }
+
+    .stat {
+      min-height: 124px;
+      display: grid;
+      align-content: space-between;
+      gap: 12px;
+    }
+
+    .stat-value {
+      font-size: clamp(1.7rem, 3vw, 2.8rem);
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+
+    .countdown {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .time-box {
+      padding: 18px 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.055);
+      text-align: center;
+    }
+
+    .time-box strong {
+      display: block;
+      font-size: clamp(1.9rem, 4vw, 3.8rem);
+      line-height: 0.96;
+      font-weight: 900;
+    }
+
+    .time-box span {
+      display: block;
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-weight: 900;
+    }
+
+    .targets {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .target {
+      padding: 14px;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.055);
+    }
+
+    .target strong {
+      display: block;
+      font-size: 1.42rem;
+      margin-top: 4px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 680px;
+      background: rgba(255, 255, 255, 0.025);
+    }
+
+    th,
+    td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--muted);
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-weight: 900;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .small-delete {
+      min-width: 34px;
+      min-height: 34px;
+      padding: 0 10px;
+      border-radius: var(--radius);
+      color: #fff;
+      border: 1px solid rgba(255, 94, 114, 0.32);
+      background: rgba(255, 94, 114, 0.12);
+      font-weight: 900;
+    }
+
+    .todo-layout {
+      display: grid;
+      grid-template-columns: 300px minmax(0, 1fr);
+      gap: 16px;
+    }
+
+    .list-nav {
+      display: grid;
+      gap: 8px;
+    }
+
+    .list-button {
+      width: 100%;
+      min-height: 42px;
+      padding: 9px 12px;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      text-align: left;
+      font-weight: 850;
+    }
+
+    .list-button.active {
+      border-color: rgba(255, 255, 255, 0.34);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .todo-item {
+      display: grid;
+      grid-template-columns: auto 1fr auto auto;
+      gap: 10px;
+      align-items: center;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.045);
+      margin-bottom: 9px;
+    }
+
+    .todo-item.done .todo-text {
+      text-decoration: line-through;
+      color: var(--muted-2);
+    }
+
+    .checkbox {
+      width: 24px;
+      height: 24px;
+      border-radius: 7px;
+      border: 1px solid var(--line-strong);
+      background: rgba(255, 255, 255, 0.07);
+      display: grid;
+      place-items: center;
+      color: #050505;
+      font-weight: 900;
+    }
+
+    .checkbox.checked {
+      border-color: transparent;
+      background: var(--white);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 26px;
+      border-radius: 999px;
+      padding: 0 10px;
+      color: #050505;
+      background: var(--blue);
+      font-size: 0.75rem;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .badge.Health { background: #f7f7f7; }
+    .badge.MCAT { background: var(--violet); }
+    .badge.Career { background: var(--blue); }
+    .badge.Habit { background: var(--yellow); }
+    .badge.General { background: #d6dee9; }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 14px 0;
+    }
+
+    .empty {
+      min-height: 96px;
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      border: 1px dashed var(--line-strong);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.025);
+      text-align: center;
+      padding: 18px;
+    }
+
+    .tips-card {
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.028);
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+
+    .tips-card summary {
+      min-height: 50px;
+      padding: 0 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text);
+      cursor: pointer;
+      list-style: none;
+      font-weight: 900;
+    }
+
+    .tips-card summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .tips-card summary:focus-visible {
+      outline: 2px solid rgba(255, 255, 255, 0.72);
+      outline-offset: -2px;
+    }
+
+    .tip-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 1px solid var(--line-strong);
+      display: inline-grid;
+      place-items: center;
+      color: var(--white);
+      flex: 0 0 auto;
+    }
+
+    .tip-icon svg {
+      width: 15px;
+      height: 15px;
+      stroke: currentColor;
+      stroke-width: 2;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .tip-chevron {
+      margin-left: auto;
+      color: var(--muted);
+      transition: transform 160ms ease;
+    }
+
+    .tips-card[open] .tip-chevron {
+      transform: rotate(180deg);
+    }
+
+    .tips-card ul {
+      margin: 0;
+      padding: 0 18px 16px 48px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .tips-card li + li {
+      margin-top: 8px;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      display: none;
+      place-items: center;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.56);
+      backdrop-filter: blur(8px);
+    }
+
+    .modal.open {
+      display: grid;
+    }
+
+    .dialog {
+      width: min(480px, 100%);
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius);
+      background: #111820;
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+
+    .dialog-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .row-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .span-2 {
+      grid-column: span 2;
+    }
+
+    .span-3 {
+      grid-column: span 3;
+    }
+
+    .span-4 {
+      grid-column: 1 / -1;
+    }
+
+    .mt {
+      margin-top: 16px;
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--line);
+      margin: 18px 0;
+    }
+
+    @media (max-width: 1180px) {
+      .grid.two,
+      .grid.three,
+      .grid.four {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .form-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .targets {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 760px) {
+      .app {
+        padding: 0 14px 28px;
+      }
+
+      .topbar {
+        margin: 0 -14px;
+        padding: 14px;
+      }
+
+      .topbar-inner,
+      .panel-head,
+      .todo-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar-inner {
+        display: grid;
+      }
+
+      .header-stats {
+        justify-content: flex-start;
+      }
+
+      .grid.two,
+      .grid.three,
+      .grid.four,
+      .form-grid,
+      .targets,
+      .countdown {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-card {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-card {
+        display: grid;
+      }
+
+      .date-controls {
+        grid-template-columns: minmax(64px, 0.7fr) minmax(140px, 1.4fr) minmax(64px, 0.7fr);
+        min-width: 0;
+      }
+
+      .date-controls label {
+        min-width: 0;
+      }
+
+      #prevHabitDay {
+        order: 1;
+      }
+
+      .date-controls label {
+        order: 2;
+      }
+
+      #nextHabitDay {
+        order: 3;
+      }
+
+      #todayHabitDay {
+        order: 4;
+        grid-column: 1 / -1;
+      }
+
+      .habit-card {
+        grid-template-columns: auto minmax(0, 1fr);
+      }
+
+      .habit-inputs,
+      .habit-card .danger {
+        grid-column: 2;
+      }
+
+      .span-2,
+      .span-3,
+      .span-4 {
+        grid-column: auto;
+      }
+
+      .todo-item {
+        grid-template-columns: auto 1fr auto;
+      }
+
+      .todo-item .badge {
+        grid-column: 2;
+        justify-self: start;
+      }
+
+      .brand {
+        align-items: flex-start;
+      }
+
+      .mark {
+        width: 42px;
+        height: 42px;
+      }
+
+      canvas {
+        height: 240px;
+      }
+    }
+  </style>
+</head>
+<body class="auth-locked">
+  <div class="login-gate" id="loginGate">
+    <form class="login-card" id="loginForm">
+      <div class="mark">I</div>
+      <h2 class="login-title">Inderpal</h2>
+      <p class="subtle">Enter your password to open the dashboard.</p>
+      <label class="mt">
+        Password
+        <input id="passwordInput" type="password" autocomplete="current-password" autofocus>
+      </label>
+      <button class="primary span-4 mt" type="submit">Unlock Dashboard</button>
+      <p class="login-error" id="loginError" aria-live="polite"></p>
+    </form>
+  </div>
+
+  <div class="app">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="brand">
+          <div class="mark" id="mark">I</div>
+          <div class="title-stack">
+            <h1><span id="ownerName">Inderpal</span>'s Life Dashboard</h1>
+            <div class="date-line" id="todayLine"></div>
+          </div>
+        </div>
+        <div class="header-stats">
+          <div class="pill"><span>Daily streak</span><strong id="streakCount">0</strong></div>
+          <div class="pill"><span>Weight goal</span><strong id="goalPill">190 lb</strong></div>
+          <button class="icon-button" id="settingsBtn" title="Settings" aria-label="Settings">
+            <svg class="settings-svg" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"></path>
+              <path d="M19.4 15a1.8 1.8 0 0 0 .36 1.98l.05.05a2.1 2.1 0 0 1-2.97 2.97l-.05-.05a1.8 1.8 0 0 0-1.98-.36 1.8 1.8 0 0 0-1.1 1.66V21a2.1 2.1 0 0 1-4.2 0v-.07a1.8 1.8 0 0 0-1.18-1.64 1.8 1.8 0 0 0-1.98.36l-.05.05a2.1 2.1 0 0 1-2.97-2.97l.05-.05A1.8 1.8 0 0 0 3.6 15a1.8 1.8 0 0 0-1.66-1.1H1.9a2.1 2.1 0 0 1 0-4.2h.07A1.8 1.8 0 0 0 3.6 8.6a1.8 1.8 0 0 0-.36-1.98l-.05-.05A2.1 2.1 0 0 1 6.16 3.6l.05.05a1.8 1.8 0 0 0 1.98.36 1.8 1.8 0 0 0 1.1-1.66V2.3a2.1 2.1 0 0 1 4.2 0v.07a1.8 1.8 0 0 0 1.1 1.66 1.8 1.8 0 0 0 1.98-.36l.05-.05a2.1 2.1 0 0 1 2.97 2.97l-.05.05a1.8 1.8 0 0 0-.36 1.98c.22.66.84 1.1 1.54 1.1h.38a2.1 2.1 0 0 1 0 4.2h-.31A1.8 1.8 0 0 0 19.4 15Z"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <nav class="tabs" aria-label="Dashboard sections">
+      <button class="tab-button active" data-tab="habits">Daily Habits</button>
+      <button class="tab-button" data-tab="health">Health Log</button>
+      <button class="tab-button" data-tab="mcat">MCAT Tracker</button>
+      <button class="tab-button" data-tab="career">Career Log</button>
+      <button class="tab-button" data-tab="todo">To-Do List <span class="count" id="todoTabCount">0</span></button>
+    </nav>
+
+    <main>
+      <section class="tab-panel active" id="habitsPanel">
+        <div class="panel-head">
+          <div>
+            <h2>Daily Habits</h2>
+            <p class="subtle">Track the day, hit the minimums, keep the streak alive.</p>
+          </div>
+          <div class="last-updated" id="habitsUpdated">Last updated: never</div>
+        </div>
+
+        <details class="tips-card">
+          <summary>
+            <span class="tip-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6"></path><path d="M10 22h4"></path><path d="M12 2a7 7 0 0 0-4 12.74V17h8v-2.26A7 7 0 0 0 12 2Z"></path></svg></span>
+            <span>Tips &amp; Guidance</span>
+            <span class="tip-chevron">v</span>
+          </summary>
+          <ul>
+            <li>Sleep: 7-8 hrs minimum. Poor sleep kills gym performance, MCAT focus, and willpower. Fix sleep before fixing anything else.</li>
+            <li>CARS: Cannot be crammed. Read 1 passage every single day &mdash; this is the only way to improve this section. Never skip it.</li>
+            <li>Steps: 10k steps is the goal. If you're under, a 20 min walk fixes it. Movement improves focus and mood.</li>
+            <li>Protein: Target 160g/day as a vegetarian. Prioritize tofu, cottage cheese, Greek yogurt, lentils, paneer.</li>
+            <li>Calories: 2,200/day for a cut at 6'1". Don't go lower &mdash; you need fuel for the gym and MCAT prep.</li>
+            <li>Gym: Even 45 minutes counts. Showing up is the whole game.</li>
+          </ul>
+        </details>
+
+        <div class="grid two">
+          <div class="card hero-card">
+            <div>
+              <div class="kicker" id="habitDateCaption">Today's Completion</div>
+              <div class="big-number" id="completionScore">0/8</div>
+              <div class="subtle" id="completionText">habits done</div>
+            </div>
+            <div class="date-controls">
+              <button class="secondary" id="prevHabitDay" title="Previous day">Back</button>
+              <label>
+                Habit date
+                <input type="date" id="habitDate">
+              </label>
+              <button class="secondary" id="nextHabitDay" title="Next day">Next</button>
+              <button class="secondary" id="todayHabitDay" title="Jump to today">Today</button>
+            </div>
+          </div>
+          <div class="card">
+            <h3>Add Custom Habit</h3>
+            <div class="form-grid mt">
+              <label class="span-2">
+                Name
+                <input id="customHabitName" placeholder="Meditation">
+              </label>
+              <label>
+                Type
+                <select id="customHabitType">
+                  <option value="checkbox">Checkbox</option>
+                  <option value="number">Number input</option>
+                </select>
+              </label>
+              <label>
+                Target
+                <input id="customHabitTarget" type="number" min="0" placeholder="Optional">
+              </label>
+              <button class="primary span-4" id="addHabitBtn">Add Habit</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="habits-grid mt" id="habitsGrid"></div>
+
+        <div class="card mt">
+          <div class="panel-head">
+            <div>
+              <h3>Current Month Habit Completion</h3>
+              <p class="subtle">White means all habits hit, gold is partial, red is missed.</p>
+            </div>
+          </div>
+          <div class="canvas-wrap">
+            <canvas id="monthlyHabitChart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <section class="tab-panel" id="healthPanel">
+        <div class="panel-head">
+          <div>
+            <h2>Health Log</h2>
+            <p class="subtle">Weight, workouts, sleep, and notes in one durable log.</p>
+          </div>
+          <div class="last-updated" id="healthUpdated">Last updated: never</div>
+        </div>
+
+        <details class="tips-card">
+          <summary>
+            <span class="tip-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6"></path><path d="M10 22h4"></path><path d="M12 2a7 7 0 0 0-4 12.74V17h8v-2.26A7 7 0 0 0 12 2Z"></path></svg></span>
+            <span>Tips &amp; Guidance</span>
+            <span class="tip-chevron">v</span>
+          </summary>
+          <ul>
+            <li>Weigh yourself same time every morning, after bathroom, before eating. That's the only consistent number.</li>
+            <li>Expect weight to fluctuate 2-3 lbs day to day &mdash; that's water, not fat. Look at the weekly trend not the daily number.</li>
+            <li>To lose 30 lbs by May 2027: you need to lose roughly 2 lbs/month. That's very doable with gym + diet.</li>
+            <li>Ankle mobility: do the wall drill every single morning. 10 reps each foot. This fixes squat depth and heel pain on hikes.</li>
+            <li>Meal prep Sunday: set up the week so junk food isn't even an option on busy days.</li>
+          </ul>
+        </details>
+
+        <div class="grid four" id="healthStats"></div>
+
+        <div class="grid two mt">
+          <div class="card">
+            <h3>New Health Entry</h3>
+            <div class="form-grid mt">
+              <label>
+                Date
+                <input type="date" id="healthDate">
+              </label>
+              <label>
+                Weight (lbs)
+                <input type="number" id="healthWeight" min="0" step="0.1" placeholder="212.4">
+              </label>
+              <label>
+                Workout
+                <select id="workoutType">
+                  <option>Push</option>
+                  <option>Pull</option>
+                  <option>Legs</option>
+                  <option>Rest</option>
+                  <option>Cardio</option>
+                  <option>Hike</option>
+                  <option>Other</option>
+                </select>
+              </label>
+              <label>
+                Duration (min)
+                <input type="number" id="workoutDuration" min="0" placeholder="60">
+              </label>
+              <label>
+                Sleep hours
+                <input type="number" id="healthSleep" min="0" step="0.1" placeholder="7.5">
+              </label>
+              <label class="span-3">
+                Notes
+                <input id="healthNotes" placeholder="Energy, lifts, soreness, wins">
+              </label>
+              <button class="primary span-4" id="addHealthBtn">Save Entry</button>
+            </div>
+          </div>
+          <div class="card">
+            <h3>Weight Goal Progress</h3>
+            <div class="big-number" id="weightProgressText">0%</div>
+            <div class="progress"><span id="weightProgressBar"></span></div>
+            <p class="subtle" id="weightProgressSub"></p>
+          </div>
+        </div>
+
+        <div class="grid two mt">
+          <div class="card">
+            <h3>Weight Over Time</h3>
+            <div class="canvas-wrap"><canvas id="weightChart"></canvas></div>
+          </div>
+          <div class="card">
+            <h3>Workout Frequency</h3>
+            <div class="canvas-wrap"><canvas id="workoutChart"></canvas></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="tab-panel" id="mcatPanel">
+        <div class="panel-head">
+          <div>
+            <h2>MCAT Tracker</h2>
+            <p class="subtle">Countdown to June 1, 2027, with practice test momentum.</p>
+          </div>
+          <div class="last-updated" id="mcatUpdated">Last updated: never</div>
+        </div>
+
+        <details class="tips-card">
+          <summary>
+            <span class="tip-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6"></path><path d="M10 22h4"></path><path d="M12 2a7 7 0 0 0-4 12.74V17h8v-2.26A7 7 0 0 0 12 2Z"></path></svg></span>
+            <span>Tips &amp; Guidance</span>
+            <span class="tip-chevron">v</span>
+          </summary>
+          <ul>
+            <li>Phase 1 (Now - Aug 2026): Buy Kaplan 7-Book Set 2026-2027 (~$160). Read 1 chapter/day. Watch Khan Academy MCAT videos alongside. Build Anki flashcard deck as you go. 1 hr/day max &mdash; don't burn out.</li>
+            <li>Phase 2 (Aug - Dec 2026): School comes first. Keep Anki going 10 min/day. Keep CARS streak alive. Finish all Kaplan books by December.</li>
+            <li>Phase 3 (Jan - Apr 2027): Buy AAMC official materials (~$350). 4-6 hrs/day. Full-length practice test every 2 weeks. Review wrong answers &mdash; this is where the score gains happen.</li>
+            <li>Phase 4 (2 weeks before): Stop new content. Trust your prep. Sleep 8 hrs every night. Bring snacks on test day &mdash; it's 7.5 hours.</li>
+            <li>Your strongest section: B/B (Biology/Biochem) &mdash; you're a micro major, lean into this.</li>
+            <li>Your weakest section: C/P (Chem/Physics) &mdash; you had C's here. Start your content review with this section.</li>
+            <li>CARS tip: Read dense nonfiction daily. News articles, philosophy, history. Anything that makes you think critically.</li>
+            <li>Free resources: Khan Academy MCAT (full free course), Anki app (free), Reddit r/MCAT for real strategies.</li>
+          </ul>
+        </details>
+
+        <div class="card">
+          <div class="kicker">Countdown to June 1, 2027</div>
+          <div class="countdown mt" id="countdown"></div>
+        </div>
+
+        <div class="targets mt">
+          <div class="target"><span class="subtle">B/B</span><strong>128+</strong></div>
+          <div class="target"><span class="subtle">C/P</span><strong>127+</strong></div>
+          <div class="target"><span class="subtle">P/S</span><strong>127+</strong></div>
+          <div class="target"><span class="subtle">CARS</span><strong>129+</strong></div>
+          <div class="target"><span class="subtle">Total for MD</span><strong>511+</strong></div>
+        </div>
+
+        <div class="grid two mt">
+          <div class="card">
+            <h3>Practice Test Log</h3>
+            <div class="form-grid mt">
+              <label>
+                Date
+                <input type="date" id="testDate">
+              </label>
+              <label>
+                Total
+                <input type="number" id="testTotal" min="472" max="528" placeholder="505">
+              </label>
+              <label>
+                B/B
+                <input type="number" id="testBB" min="118" max="132" placeholder="126">
+              </label>
+              <label>
+                C/P
+                <input type="number" id="testCP" min="118" max="132" placeholder="126">
+              </label>
+              <label>
+                P/S
+                <input type="number" id="testPS" min="118" max="132" placeholder="126">
+              </label>
+              <label>
+                CARS
+                <input type="number" id="testCARS" min="118" max="132" placeholder="127">
+              </label>
+              <label class="span-2">
+                Notes
+                <input id="testNotes" placeholder="Timing, review themes, section feel">
+              </label>
+              <button class="primary span-4" id="addTestBtn">Add Practice Test</button>
+            </div>
+          </div>
+          <div class="card">
+            <h3>Total Score Trend</h3>
+            <div class="canvas-wrap"><canvas id="mcatChart"></canvas></div>
+          </div>
+        </div>
+
+        <div class="card mt">
+          <h3>Past Practice Tests</h3>
+          <div class="table-wrap mt">
+            <table>
+              <thead>
+                <tr><th>Date</th><th>Total</th><th>B/B</th><th>C/P</th><th>P/S</th><th>CARS</th><th>Notes</th><th></th></tr>
+              </thead>
+              <tbody id="testsTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="tab-panel" id="careerPanel">
+        <div class="panel-head">
+          <div>
+            <h2>Career Log</h2>
+            <p class="subtle">Shadowing and volunteering hours with totals that stay put.</p>
+          </div>
+          <div class="last-updated" id="careerUpdated">Last updated: never</div>
+        </div>
+
+        <details class="tips-card">
+          <summary>
+            <span class="tip-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6"></path><path d="M10 22h4"></path><path d="M12 2a7 7 0 0 0-4 12.74V17h8v-2.26A7 7 0 0 0 12 2Z"></path></svg></span>
+            <span>Tips &amp; Guidance</span>
+            <span class="tip-chevron">v</span>
+          </summary>
+          <ul>
+            <li>MD Shadowing target: 100-200 hours for MD/DO applications. You currently have ~1 hour. Aim for 2 shifts per week this summer. That gets you to 50+ hours by fall.</li>
+            <li>Volunteering: Most medical schools want 50-150 volunteer hours. Start now &mdash; apply to local hospitals, free clinics, food banks.</li>
+            <li>Your CNA hours (2,330+) are a massive advantage. Most applicants spend years building clinical experience. You already have it.</li>
+            <li>When shadowing: observe how the doctor communicates with patients, makes decisions, handles difficult situations. These become your medical school interview stories.</li>
+            <li>Application timeline: Applications open June 2027. Everything needs to be in order before then &mdash; MCAT score, hours, personal statement, letters of recommendation.</li>
+            <li>Letters of recommendation: Start building relationships with professors and the doctor you're shadowing NOW. You'll need 3-4 strong letters.</li>
+          </ul>
+        </details>
+
+        <div class="grid two">
+          <div class="card">
+            <h3>MD Shadowing Log</h3>
+            <div class="big-number" id="shadowTotal">0h</div>
+            <div class="progress"><span id="shadowProgress"></span></div>
+            <p class="subtle">Progress toward 100-hour goal</p>
+            <div class="form-grid mt">
+              <label>
+                Date
+                <input type="date" id="shadowDate">
+              </label>
+              <label>
+                Doctor
+                <input id="doctorName" placeholder="Dr. Patel">
+              </label>
+              <label>
+                Specialty
+                <input id="doctorSpecialty" placeholder="Cardiology">
+              </label>
+              <label>
+                Hours
+                <input type="number" id="shadowHours" min="0" step="0.25" placeholder="4">
+              </label>
+              <label class="span-3">
+                Notes
+                <input id="shadowNotes" placeholder="Cases observed, takeaways">
+              </label>
+              <button class="primary" id="addShadowBtn">Add</button>
+            </div>
+            <div class="table-wrap mt">
+              <table>
+                <thead><tr><th>Date</th><th>Doctor</th><th>Specialty</th><th>Hours</th><th>Notes</th><th></th></tr></thead>
+                <tbody id="shadowTable"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Volunteering Log</h3>
+            <div class="big-number" id="volunteerTotal">0h</div>
+            <p class="subtle">Running total volunteer hours</p>
+            <div class="form-grid mt">
+              <label>
+                Date
+                <input type="date" id="volunteerDate">
+              </label>
+              <label class="span-2">
+                Organization / Place
+                <input id="volunteerPlace" placeholder="Community clinic">
+              </label>
+              <label>
+                Hours
+                <input type="number" id="volunteerHours" min="0" step="0.25" placeholder="3">
+              </label>
+              <label class="span-3">
+                Notes
+                <input id="volunteerNotes" placeholder="Role, impact, people served">
+              </label>
+              <button class="primary" id="addVolunteerBtn">Add</button>
+            </div>
+            <div class="table-wrap mt">
+              <table>
+                <thead><tr><th>Date</th><th>Organization</th><th>Hours</th><th>Notes</th><th></th></tr></thead>
+                <tbody id="volunteerTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="tab-panel" id="todoPanel">
+        <div class="panel-head">
+          <div>
+            <h2>To-Do List</h2>
+            <p class="subtle"><span id="activeTaskText">0 active tasks</span> across your lists.</p>
+          </div>
+          <div class="last-updated" id="todoUpdated">Last updated: never</div>
+        </div>
+
+        <details class="tips-card">
+          <summary>
+            <span class="tip-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6"></path><path d="M10 22h4"></path><path d="M12 2a7 7 0 0 0-4 12.74V17h8v-2.26A7 7 0 0 0 12 2Z"></path></svg></span>
+            <span>Tips &amp; Guidance</span>
+            <span class="tip-chevron">v</span>
+          </summary>
+          <ul>
+            <li>Review your to-do list every morning when you open the dashboard.</li>
+            <li>Keep it under 5 active tasks per day &mdash; more than that and nothing gets done.</li>
+            <li>If a task has been sitting undone for 2+ weeks, either do it today or delete it.</li>
+            <li>Suggested lists to create: MCAT Application Checklist, Pre-Med Requirements, Summer Goals, Weekly Tasks.</li>
+          </ul>
+        </details>
+
+        <div class="todo-layout">
+          <aside class="card compact">
+            <div class="row-actions">
+              <h3>Lists</h3>
+              <button class="secondary" id="createListBtn">Create New List</button>
+            </div>
+            <div class="list-nav mt" id="listNav"></div>
+          </aside>
+
+          <div class="card">
+            <h3 id="todoListTitle">Main List</h3>
+            <div class="form-grid mt">
+              <label class="span-3">
+                Task
+                <input id="todoInput" placeholder="Add a task">
+              </label>
+              <label>
+                Category
+                <select id="todoCategory">
+                  <option>Health</option>
+                  <option>MCAT</option>
+                  <option>Career</option>
+                  <option>Habit</option>
+                  <option>General</option>
+                </select>
+              </label>
+              <button class="primary span-4" id="addTodoBtn">Add Task</button>
+            </div>
+            <div class="filters" id="todoFilters"></div>
+            <div id="todoItems"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal" id="settingsModal" aria-hidden="true">
+    <div class="dialog">
+      <div class="dialog-head">
+        <h3>Settings</h3>
+        <button class="icon-button" id="closeSettings" aria-label="Close settings">x</button>
+      </div>
+      <label>
+        Your name
+        <input id="settingsName" placeholder="Inderpal">
+      </label>
+      <div class="grid two mt">
+        <label>
+          Start weight
+          <input type="number" id="settingsStartWeight" min="0" step="0.1">
+        </label>
+        <label>
+          Weight goal
+          <input type="number" id="settingsWeightGoal" min="0" step="0.1">
+        </label>
+      </div>
+      <div class="modal-actions">
+        <button class="secondary" id="cancelSettings">Cancel</button>
+        <button class="primary" id="saveSettings">Save Settings</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="listModal" aria-hidden="true">
+    <div class="dialog">
+      <div class="dialog-head">
+        <h3>Create New List</h3>
+        <button class="icon-button" id="closeListModal" aria-label="Close list modal">x</button>
+      </div>
+      <label>
+        List name
+        <input id="newListName" placeholder="MCAT Prep">
+      </label>
+      <div class="modal-actions">
+        <button class="secondary" id="cancelList">Cancel</button>
+        <button class="primary" id="saveList">Create List</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const AUTH_KEY = "inderpalLifeDashboard.auth.v1";
+    const DASHBOARD_PASSWORD = "Anoop2013#";
+    const STORE_KEY = "inderpalLifeDashboard.v1";
+    const TODAY = new Date();
+    const targetMcatDate = new Date("2027-06-01T00:00:00");
+
+    const defaultHabits = [
+      { id: "gym", name: "Gym", type: "checkbox", targetText: "Done / not done" },
+      { id: "sleep", name: "Sleep", type: "number", target: 7, unit: "hrs", rule: "min", targetText: "Minimum 7 hrs" },
+      { id: "cars", name: "CARS Passage", type: "checkbox", targetText: "Done / not done" },
+      { id: "mcatStudy", name: "MCAT Study", type: "combo", unit: "min", targetText: "Checkbox + minutes studied" },
+      { id: "journal", name: "Journal", type: "checkbox", targetText: "Done / not done" },
+      { id: "steps", name: "Steps", type: "number", target: 10000, unit: "steps", rule: "min", targetText: "Minimum 10,000" },
+      { id: "protein", name: "Protein", type: "number", target: 160, unit: "g", rule: "min", targetText: "Target 160g/day" },
+      { id: "calories", name: "Calories", type: "number", target: 2200, unit: "cal", rule: "max", targetText: "Target 2,200 cal/day cutting" }
+    ];
+
+    const categories = ["All", "Active", "Completed", "Health", "MCAT", "Career", "Habit", "General"];
+    const workoutTypes = ["Push", "Pull", "Legs", "Rest", "Cardio", "Hike", "Other"];
+
+    let state;
+    let activeTab = "habits";
+    let activeListId;
+    let todoFilter = "All";
+    let dashboardStarted = false;
+    let countdownTimer;
+
+    const $ = (id) => document.getElementById(id);
+
+    function loadState() {
+      const fallback = {
+        settings: { name: "Inderpal", startWeight: 220, weightGoal: 190 },
+        customHabits: [],
+        habits: {},
+        healthLogs: [],
+        practiceTests: [],
+        shadowing: [],
+        volunteering: [],
+        todos: {
+          activeListId: "main",
+          lists: [{ id: "main", name: "Main List", items: [] }]
+        },
+        lastUpdated: {}
+      };
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORE_KEY));
+        if (!saved) return fallback;
+        const merged = { ...fallback, ...saved };
+        merged.settings = { ...fallback.settings, ...(saved.settings || {}) };
+        merged.todos = saved.todos || fallback.todos;
+        if (!merged.todos.lists || !merged.todos.lists.length) merged.todos = fallback.todos;
+        merged.lastUpdated = saved.lastUpdated || {};
+        return merged;
+      } catch (error) {
+        return fallback;
+      }
+    }
+
+    function saveState(tabName, shouldRender = true) {
+      if (tabName) state.lastUpdated[tabName] = new Date().toISOString();
+      localStorage.setItem(STORE_KEY, JSON.stringify(state));
+      if (shouldRender) {
+        renderAll();
+      } else {
+        renderHeader();
+        renderUpdated();
+      }
+    }
+
+    function uid(prefix) {
+      return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    }
+
+    function dateKey(date = new Date()) {
+      const d = new Date(date);
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    }
+
+    function prettyDate(value) {
+      if (!value) return "never";
+      const d = new Date(value);
+      if (Number.isNaN(d.getTime())) return "never";
+      return d.toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+    }
+
+    function number(value, fallback = 0) {
+      const n = Number(value);
+      return Number.isFinite(n) ? n : fallback;
+    }
+
+    function allHabits() {
+      return [
+        ...defaultHabits,
+        ...state.customHabits.map((habit) => ({
+          ...habit,
+          targetText: habit.type === "number" && habit.target ? `Target ${habit.target}` : "Custom habit"
+        }))
+      ];
+    }
+
+    function getDayHabits(dayKey) {
+      if (!state.habits[dayKey]) state.habits[dayKey] = {};
+      return state.habits[dayKey];
+    }
+
+    function habitEntry(dayKey, habitId) {
+      const day = getDayHabits(dayKey);
+      if (!day[habitId]) day[habitId] = { done: false, value: "" };
+      return day[habitId];
+    }
+
+    function isHabitComplete(habit, entry) {
+      if (!entry) return false;
+      if (habit.type === "checkbox") return Boolean(entry.done);
+      if (habit.type === "combo") return Boolean(entry.done);
+      const value = number(entry.value, NaN);
+      if (!Number.isFinite(value) || value <= 0) return false;
+      if (habit.rule === "max") return value <= habit.target;
+      if (habit.target) return value >= habit.target;
+      return value > 0;
+    }
+
+    function completionForDate(dayKey) {
+      const habits = allHabits();
+      const day = state.habits[dayKey] || {};
+      const done = habits.filter((habit) => isHabitComplete(habit, day[habit.id])).length;
+      return { done, total: habits.length, percent: habits.length ? done / habits.length : 0 };
+    }
+
+    function renderAll() {
+      renderHeader();
+      renderUpdated();
+      renderHabits();
+      renderHealth();
+      renderMcat();
+      renderCareer();
+      renderTodos();
+      drawAllCharts();
+    }
+
+    function renderHeader() {
+      const todayText = TODAY.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric", year: "numeric" });
+      $("todayLine").textContent = todayText;
+      $("ownerName").textContent = state.settings.name || "Inderpal";
+      $("mark").textContent = (state.settings.name || "I").trim().slice(0, 1).toUpperCase();
+      $("goalPill").textContent = `${number(state.settings.weightGoal, 190)} lb`;
+      $("streakCount").textContent = getStreak();
+    }
+
+    function renderUpdated() {
+      ["habits", "health", "mcat", "career", "todo"].forEach((tab) => {
+        $(`${tab}Updated`).textContent = `Last updated: ${prettyDate(state.lastUpdated[tab])}`;
+      });
+    }
+
+    function getStreak() {
+      let streak = 0;
+      const cursor = new Date();
+      for (let i = 0; i < 730; i += 1) {
+        const key = dateKey(cursor);
+        if (completionForDate(key).done >= 5) {
+          streak += 1;
+          cursor.setDate(cursor.getDate() - 1);
+        } else {
+          break;
+        }
+      }
+      return streak;
+    }
+
+    function renderHabits() {
+      const selectedDate = $("habitDate").value || dateKey();
+      const day = getDayHabits(selectedDate);
+      const habits = allHabits();
+      renderHabitScore();
+      $("habitsGrid").innerHTML = habits.map((habit) => {
+        const entry = day[habit.id] || { done: false, value: "" };
+        const complete = isHabitComplete(habit, entry);
+        const canRemove = habit.id.startsWith("custom-");
+        const checkControl = habit.type !== "number"
+          ? `<button class="check-toggle ${entry.done ? "active" : ""}" data-habit-toggle="${habit.id}" aria-label="Toggle ${escapeHtml(habit.name)}">${entry.done ? "✓" : ""}</button>`
+          : `<span class="check-indicator ${complete ? "active" : ""}" aria-hidden="true">${complete ? "✓" : ""}</span>`;
+        return `
+          <article class="habit-card ${complete ? "done" : ""}">
+            ${checkControl}
+            <div class="habit-top">
+              <div>
+                <div class="habit-name">${escapeHtml(habit.name)}</div>
+                <div class="habit-target">${escapeHtml(habit.targetText || "")}</div>
+              </div>
+            </div>
+            <div class="habit-inputs">
+              ${habit.type === "number" || habit.type === "combo" ? `<input type="number" min="0" value="${escapeAttr(entry.value || "")}" placeholder="${habit.unit ? `Actual ${habit.unit}` : "Actual value"}" data-habit-value="${habit.id}">` : ""}
+            </div>
+            ${canRemove ? `<button class="danger" data-remove-habit="${habit.id}">Remove</button>` : `<span></span>`}
+          </article>
+        `;
+      }).join("");
+
+      document.querySelectorAll("[data-habit-toggle]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const id = button.dataset.habitToggle;
+          const entry = habitEntry($("habitDate").value, id);
+          entry.done = !entry.done;
+          saveState("habits");
+        });
+      });
+
+      document.querySelectorAll("[data-habit-value]").forEach((input) => {
+        input.addEventListener("input", () => {
+          const id = input.dataset.habitValue;
+          const entry = habitEntry($("habitDate").value, id);
+          entry.value = input.value;
+          const habit = allHabits().find((item) => item.id === id);
+          const row = input.closest(".habit-card");
+          const complete = isHabitComplete(habit, entry);
+          row.classList.toggle("done", complete);
+          const indicator = row.querySelector(".check-indicator");
+          if (indicator) {
+            indicator.classList.toggle("active", complete);
+            indicator.textContent = complete ? "✓" : "";
+          }
+          saveState("habits", false);
+          renderHabitScore();
+          drawMonthlyHabitChart();
+        });
+      });
+
+      document.querySelectorAll("[data-remove-habit]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const id = button.dataset.removeHabit;
+          state.customHabits = state.customHabits.filter((habit) => habit.id !== id);
+          Object.values(state.habits).forEach((dayEntry) => delete dayEntry[id]);
+          saveState("habits");
+        });
+      });
+    }
+
+    function renderHabitScore() {
+      const selectedDate = $("habitDate").value || dateKey();
+      const completion = completionForDate(selectedDate);
+      $("completionScore").textContent = `${completion.done}/${completion.total}`;
+      const selected = new Date(`${selectedDate}T00:00:00`);
+      const selectedLabel = selected.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+      $("habitDateCaption").textContent = selectedDate === dateKey() ? "Today's Completion" : "Selected Day";
+      $("completionText").textContent = `habits done on ${selectedLabel}`;
+    }
+
+    function renderHealth() {
+      const logs = [...state.healthLogs].sort((a, b) => a.date.localeCompare(b.date));
+      const currentWeight = logs.length ? number(logs[logs.length - 1].weight, state.settings.startWeight) : number(state.settings.startWeight, 220);
+      const start = number(state.settings.startWeight, 220);
+      const goal = number(state.settings.weightGoal, 190);
+      const lost = Math.max(0, start - currentWeight);
+      const totalToLose = Math.max(1, start - goal);
+      const progress = Math.max(0, Math.min(100, (lost / totalToLose) * 100));
+      const sleepValues = logs.map((log) => number(log.sleep, NaN)).filter(Number.isFinite);
+      const avgSleep = sleepValues.length ? sleepValues.reduce((a, b) => a + b, 0) / sleepValues.length : 0;
+      const workouts = logs.filter((log) => log.workoutType && log.workoutType !== "Rest").length;
+
+      $("healthStats").innerHTML = [
+        statCard("Current Weight", `${formatNumber(currentWeight, 1)} lb`, "Latest logged weight"),
+        statCard("Lbs Lost", `${formatNumber(lost, 1)} lb`, `${formatNumber(progress, 0)}% to goal`),
+        statCard("Average Sleep", `${formatNumber(avgSleep, 1)}h`, "Across health entries"),
+        statCard("Total Workouts", workouts, "Non-rest entries")
+      ].join("");
+
+      $("weightProgressText").textContent = `${formatNumber(progress, 0)}%`;
+      $("weightProgressBar").style.width = `${progress}%`;
+      $("weightProgressSub").textContent = `${formatNumber(start, 1)} lb start to ${formatNumber(goal, 1)} lb goal. Current: ${formatNumber(currentWeight, 1)} lb.`;
+    }
+
+    function statCard(label, value, detail) {
+      return `
+        <div class="card stat">
+          <div class="kicker">${label}</div>
+          <div class="stat-value">${value}</div>
+          <div class="subtle">${detail}</div>
+        </div>
+      `;
+    }
+
+    function renderMcat() {
+      const tests = [...state.practiceTests].sort((a, b) => a.date.localeCompare(b.date));
+      $("testsTable").innerHTML = tests.length ? tests.map((test) => `
+        <tr>
+          <td>${escapeHtml(test.date)}</td>
+          <td><strong>${escapeHtml(test.total)}</strong></td>
+          <td>${escapeHtml(test.bb)}</td>
+          <td>${escapeHtml(test.cp)}</td>
+          <td>${escapeHtml(test.ps)}</td>
+          <td>${escapeHtml(test.cars)}</td>
+          <td>${escapeHtml(test.notes || "")}</td>
+          <td><button class="small-delete" data-delete-test="${test.id}">x</button></td>
+        </tr>
+      `).join("") : `<tr><td colspan="8"><div class="empty">No practice tests logged yet.</div></td></tr>`;
+
+      document.querySelectorAll("[data-delete-test]").forEach((button) => {
+        button.addEventListener("click", () => {
+          state.practiceTests = state.practiceTests.filter((test) => test.id !== button.dataset.deleteTest);
+          saveState("mcat");
+        });
+      });
+    }
+
+    function renderCountdown() {
+      const diff = Math.max(0, targetMcatDate - new Date());
+      const days = Math.floor(diff / 86400000);
+      const hours = Math.floor((diff % 86400000) / 3600000);
+      const minutes = Math.floor((diff % 3600000) / 60000);
+      const seconds = Math.floor((diff % 60000) / 1000);
+      $("countdown").innerHTML = [
+        ["Days", days],
+        ["Hours", hours],
+        ["Minutes", minutes],
+        ["Seconds", seconds]
+      ].map(([label, value]) => `<div class="time-box"><strong>${String(value).padStart(label === "Days" ? 1 : 2, "0")}</strong><span>${label}</span></div>`).join("");
+    }
+
+    function renderCareer() {
+      const shadowTotal = state.shadowing.reduce((sum, entry) => sum + number(entry.hours), 0);
+      const volunteerTotal = state.volunteering.reduce((sum, entry) => sum + number(entry.hours), 0);
+      $("shadowTotal").textContent = `${formatNumber(shadowTotal, 1)}h`;
+      $("shadowProgress").style.width = `${Math.min(100, shadowTotal)}%`;
+      $("volunteerTotal").textContent = `${formatNumber(volunteerTotal, 1)}h`;
+
+      $("shadowTable").innerHTML = state.shadowing.length ? state.shadowing
+        .slice()
+        .sort((a, b) => b.date.localeCompare(a.date))
+        .map((entry) => `
+          <tr>
+            <td>${escapeHtml(entry.date)}</td>
+            <td>${escapeHtml(entry.doctor)}</td>
+            <td>${escapeHtml(entry.specialty)}</td>
+            <td>${escapeHtml(entry.hours)}</td>
+            <td>${escapeHtml(entry.notes || "")}</td>
+            <td><button class="small-delete" data-delete-shadow="${entry.id}">x</button></td>
+          </tr>
+        `).join("") : `<tr><td colspan="6"><div class="empty">No shadowing entries yet.</div></td></tr>`;
+
+      $("volunteerTable").innerHTML = state.volunteering.length ? state.volunteering
+        .slice()
+        .sort((a, b) => b.date.localeCompare(a.date))
+        .map((entry) => `
+          <tr>
+            <td>${escapeHtml(entry.date)}</td>
+            <td>${escapeHtml(entry.place)}</td>
+            <td>${escapeHtml(entry.hours)}</td>
+            <td>${escapeHtml(entry.notes || "")}</td>
+            <td><button class="small-delete" data-delete-volunteer="${entry.id}">x</button></td>
+          </tr>
+        `).join("") : `<tr><td colspan="5"><div class="empty">No volunteering entries yet.</div></td></tr>`;
+
+      document.querySelectorAll("[data-delete-shadow]").forEach((button) => {
+        button.addEventListener("click", () => {
+          state.shadowing = state.shadowing.filter((entry) => entry.id !== button.dataset.deleteShadow);
+          saveState("career");
+        });
+      });
+      document.querySelectorAll("[data-delete-volunteer]").forEach((button) => {
+        button.addEventListener("click", () => {
+          state.volunteering = state.volunteering.filter((entry) => entry.id !== button.dataset.deleteVolunteer);
+          saveState("career");
+        });
+      });
+    }
+
+    function renderTodos() {
+      if (!state.todos.lists.some((list) => list.id === activeListId)) activeListId = state.todos.lists[0].id;
+      state.todos.activeListId = activeListId;
+      const activeList = state.todos.lists.find((list) => list.id === activeListId);
+      const activeCount = state.todos.lists.flatMap((list) => list.items).filter((item) => !item.done).length;
+      $("todoTabCount").textContent = activeCount;
+      $("activeTaskText").textContent = `${activeCount} active ${activeCount === 1 ? "task" : "tasks"}`;
+
+      $("listNav").innerHTML = state.todos.lists.map((list) => {
+        const count = list.items.filter((item) => !item.done).length;
+        return `<button class="list-button ${list.id === activeListId ? "active" : ""}" data-list-id="${list.id}"><span>${escapeHtml(list.name)}</span><span>${count}</span></button>`;
+      }).join("");
+      $("todoListTitle").textContent = activeList.name;
+
+      $("todoFilters").innerHTML = categories.map((category) => `<button class="chip ${todoFilter === category ? "active" : ""}" data-filter="${category}">${category}</button>`).join("");
+
+      const visibleItems = activeList.items.filter((item) => {
+        if (todoFilter === "All") return true;
+        if (todoFilter === "Active") return !item.done;
+        if (todoFilter === "Completed") return item.done;
+        return item.category === todoFilter;
+      });
+
+      $("todoItems").innerHTML = visibleItems.length ? visibleItems.map((item) => `
+        <div class="todo-item ${item.done ? "done" : ""}">
+          <button class="checkbox ${item.done ? "checked" : ""}" data-toggle-todo="${item.id}">${item.done ? "✓" : ""}</button>
+          <div class="todo-text">${escapeHtml(item.text)}</div>
+          <span class="badge ${escapeAttr(item.category)}">${escapeHtml(item.category)}</span>
+          <button class="small-delete" data-delete-todo="${item.id}">x</button>
+        </div>
+      `).join("") : `<div class="empty">Nothing here yet.</div>`;
+
+      document.querySelectorAll("[data-list-id]").forEach((button) => {
+        button.addEventListener("click", () => {
+          activeListId = button.dataset.listId;
+          saveState("todo");
+        });
+      });
+      document.querySelectorAll("[data-filter]").forEach((button) => {
+        button.addEventListener("click", () => {
+          todoFilter = button.dataset.filter;
+          renderTodos();
+        });
+      });
+      document.querySelectorAll("[data-toggle-todo]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const item = activeList.items.find((todo) => todo.id === button.dataset.toggleTodo);
+          if (item) item.done = !item.done;
+          saveState("todo");
+        });
+      });
+      document.querySelectorAll("[data-delete-todo]").forEach((button) => {
+        button.addEventListener("click", () => {
+          activeList.items = activeList.items.filter((item) => item.id !== button.dataset.deleteTodo);
+          saveState("todo");
+        });
+      });
+    }
+
+    function drawAllCharts() {
+      requestAnimationFrame(() => {
+        drawMonthlyHabitChart();
+        drawWeightChart();
+        drawWorkoutChart();
+        drawMcatChart();
+      });
+    }
+
+    function setupCanvas(canvas) {
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = Math.max(1, Math.floor(rect.width * dpr));
+      canvas.height = Math.max(1, Math.floor(rect.height * dpr));
+      const ctx = canvas.getContext("2d");
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      return { ctx, width: rect.width, height: rect.height };
+    }
+
+    function clearChart(ctx, width, height) {
+      ctx.clearRect(0, 0, width, height);
+      ctx.fillStyle = "rgba(255,255,255,0.025)";
+      ctx.fillRect(0, 0, width, height);
+    }
+
+    function drawAxes(ctx, width, height, padding) {
+      ctx.strokeStyle = "rgba(255,255,255,0.12)";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(padding.left, padding.top);
+      ctx.lineTo(padding.left, height - padding.bottom);
+      ctx.lineTo(width - padding.right, height - padding.bottom);
+      ctx.stroke();
+      ctx.strokeStyle = "rgba(255,255,255,0.055)";
+      for (let i = 1; i <= 4; i += 1) {
+        const y = padding.top + ((height - padding.top - padding.bottom) * i) / 5;
+        ctx.beginPath();
+        ctx.moveTo(padding.left, y);
+        ctx.lineTo(width - padding.right, y);
+        ctx.stroke();
+      }
+    }
+
+    function drawMonthlyHabitChart() {
+      const canvas = $("monthlyHabitChart");
+      if (!canvas.offsetParent) return;
+      const { ctx, width, height } = setupCanvas(canvas);
+      const padding = { left: 34, right: 18, top: 18, bottom: 34 };
+      clearChart(ctx, width, height);
+      drawAxes(ctx, width, height, padding);
+
+      const current = new Date($("habitDate").value || dateKey());
+      const year = current.getFullYear();
+      const month = current.getMonth();
+      const days = new Date(year, month + 1, 0).getDate();
+      const chartW = width - padding.left - padding.right;
+      const chartH = height - padding.top - padding.bottom;
+      const gap = Math.max(2, chartW / days * 0.22);
+      const barW = Math.max(4, chartW / days - gap);
+
+      for (let day = 1; day <= days; day += 1) {
+        const key = dateKey(new Date(year, month, day));
+        const completion = completionForDate(key);
+        const barH = chartH * completion.percent;
+        const x = padding.left + (day - 1) * (chartW / days) + gap / 2;
+        const y = height - padding.bottom - barH;
+        ctx.fillStyle = completion.done === completion.total && completion.total ? "#f7f7f7" : completion.done > 0 ? "#d8b64b" : "#ef5b68";
+        roundRect(ctx, x, y, barW, Math.max(2, barH), 4);
+        ctx.fill();
+        if (day === 1 || day === days || day % 5 === 0) {
+          ctx.fillStyle = "rgba(244,247,251,0.58)";
+          ctx.font = "11px Inter, sans-serif";
+          ctx.textAlign = "center";
+          ctx.fillText(day, x + barW / 2, height - 12);
+        }
+      }
+    }
+
+    function drawWeightChart() {
+      const canvas = $("weightChart");
+      if (!canvas.offsetParent) return;
+      const { ctx, width, height } = setupCanvas(canvas);
+      const padding = { left: 42, right: 18, top: 18, bottom: 34 };
+      clearChart(ctx, width, height);
+      drawAxes(ctx, width, height, padding);
+      const data = [...state.healthLogs]
+        .filter((log) => log.date && log.weight)
+        .sort((a, b) => a.date.localeCompare(b.date))
+        .map((log) => ({ label: log.date.slice(5), value: number(log.weight) }));
+      drawLine(ctx, width, height, padding, data, { color: "#f7f7f7", minHint: state.settings.weightGoal, maxHint: state.settings.startWeight });
+    }
+
+    function drawMcatChart() {
+      const canvas = $("mcatChart");
+      if (!canvas.offsetParent) return;
+      const { ctx, width, height } = setupCanvas(canvas);
+      const padding = { left: 42, right: 18, top: 18, bottom: 34 };
+      clearChart(ctx, width, height);
+      drawAxes(ctx, width, height, padding);
+      const data = [...state.practiceTests]
+        .filter((test) => test.date && test.total)
+        .sort((a, b) => a.date.localeCompare(b.date))
+        .map((test) => ({ label: test.date.slice(5), value: number(test.total) }));
+      drawLine(ctx, width, height, padding, data, { color: "#b38cff", minHint: 472, maxHint: 528 });
+    }
+
+    function drawLine(ctx, width, height, padding, data, options) {
+      if (!data.length) {
+        drawEmptyChart(ctx, width, height, "No data yet");
+        return;
+      }
+      const chartW = width - padding.left - padding.right;
+      const chartH = height - padding.top - padding.bottom;
+      const values = data.map((d) => d.value);
+      let min = Math.min(...values, options.minHint ?? Math.min(...values));
+      let max = Math.max(...values, options.maxHint ?? Math.max(...values));
+      if (max === min) { max += 1; min -= 1; }
+      const points = data.map((d, i) => {
+        const x = padding.left + (data.length === 1 ? chartW / 2 : (chartW * i) / (data.length - 1));
+        const y = padding.top + chartH - ((d.value - min) / (max - min)) * chartH;
+        return { x, y, ...d };
+      });
+
+      const gradient = ctx.createLinearGradient(0, padding.top, 0, height - padding.bottom);
+      gradient.addColorStop(0, `${options.color}55`);
+      gradient.addColorStop(1, `${options.color}00`);
+      ctx.beginPath();
+      points.forEach((point, i) => i ? ctx.lineTo(point.x, point.y) : ctx.moveTo(point.x, point.y));
+      ctx.lineTo(points[points.length - 1].x, height - padding.bottom);
+      ctx.lineTo(points[0].x, height - padding.bottom);
+      ctx.closePath();
+      ctx.fillStyle = gradient;
+      ctx.fill();
+
+      ctx.beginPath();
+      points.forEach((point, i) => i ? ctx.lineTo(point.x, point.y) : ctx.moveTo(point.x, point.y));
+      ctx.strokeStyle = options.color;
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      points.forEach((point, i) => {
+        ctx.fillStyle = "#050505";
+        ctx.strokeStyle = options.color;
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(point.x, point.y, 5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+        if (i === 0 || i === points.length - 1 || data.length <= 6) {
+          ctx.fillStyle = "rgba(244,247,251,0.62)";
+          ctx.font = "11px Inter, sans-serif";
+          ctx.textAlign = "center";
+          ctx.fillText(point.label, point.x, height - 12);
+        }
+      });
+
+      ctx.fillStyle = "rgba(244,247,251,0.65)";
+      ctx.font = "12px Inter, sans-serif";
+      ctx.textAlign = "right";
+      ctx.fillText(formatNumber(max, 0), padding.left - 8, padding.top + 8);
+      ctx.fillText(formatNumber(min, 0), padding.left - 8, height - padding.bottom);
+    }
+
+    function drawWorkoutChart() {
+      const canvas = $("workoutChart");
+      if (!canvas.offsetParent) return;
+      const { ctx, width, height } = setupCanvas(canvas);
+      const padding = { left: 36, right: 18, top: 18, bottom: 52 };
+      clearChart(ctx, width, height);
+      drawAxes(ctx, width, height, padding);
+      const counts = workoutTypes.map((type) => ({
+        label: type,
+        value: state.healthLogs.filter((log) => log.workoutType === type).length
+      }));
+      const max = Math.max(1, ...counts.map((d) => d.value));
+      const chartW = width - padding.left - padding.right;
+      const chartH = height - padding.top - padding.bottom;
+      const gap = Math.max(8, chartW / counts.length * 0.28);
+      const barW = Math.max(16, chartW / counts.length - gap);
+      const colors = ["#f7f7f7", "#c9c9c9", "#a7a7a7", "#777", "#d8b64b", "#b9c7dd", "#ef5b68"];
+
+      counts.forEach((item, i) => {
+        const barH = (item.value / max) * chartH;
+        const x = padding.left + i * (chartW / counts.length) + gap / 2;
+        const y = height - padding.bottom - barH;
+        ctx.fillStyle = colors[i % colors.length];
+        roundRect(ctx, x, y, barW, Math.max(2, barH), 5);
+        ctx.fill();
+        ctx.fillStyle = "rgba(244,247,251,0.72)";
+        ctx.font = "12px Inter, sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText(item.value, x + barW / 2, y - 7);
+        ctx.save();
+        ctx.translate(x + barW / 2, height - 32);
+        ctx.rotate(-Math.PI / 7);
+        ctx.fillStyle = "rgba(244,247,251,0.58)";
+        ctx.font = "11px Inter, sans-serif";
+        ctx.fillText(item.label, 0, 0);
+        ctx.restore();
+      });
+    }
+
+    function drawEmptyChart(ctx, width, height, text) {
+      ctx.fillStyle = "rgba(244,247,251,0.5)";
+      ctx.font = "700 15px Inter, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText(text, width / 2, height / 2);
+    }
+
+    function roundRect(ctx, x, y, width, height, radius) {
+      const r = Math.min(radius, width / 2, height / 2);
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.arcTo(x + width, y, x + width, y + height, r);
+      ctx.arcTo(x + width, y + height, x, y + height, r);
+      ctx.arcTo(x, y + height, x, y, r);
+      ctx.arcTo(x, y, x + width, y, r);
+      ctx.closePath();
+    }
+
+    function formatNumber(value, decimals = 0) {
+      const n = number(value, 0);
+      return n.toLocaleString(undefined, { maximumFractionDigits: decimals, minimumFractionDigits: decimals });
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function escapeAttr(value) {
+      return escapeHtml(value).replaceAll("`", "&#096;");
+    }
+
+    function openModal(id) {
+      $(id).classList.add("open");
+      $(id).setAttribute("aria-hidden", "false");
+    }
+
+    function closeModal(id) {
+      $(id).classList.remove("open");
+      $(id).setAttribute("aria-hidden", "true");
+    }
+
+    function shiftHabitDate(days) {
+      const current = new Date(`${$("habitDate").value || dateKey()}T00:00:00`);
+      current.setDate(current.getDate() + days);
+      $("habitDate").value = dateKey(current);
+      renderHabits();
+      drawMonthlyHabitChart();
+    }
+
+    function initEvents() {
+      document.querySelectorAll(".tab-button").forEach((button) => {
+        button.addEventListener("click", () => {
+          activeTab = button.dataset.tab;
+          document.querySelectorAll(".tab-button").forEach((tab) => tab.classList.toggle("active", tab === button));
+          document.querySelectorAll(".tab-panel").forEach((panel) => panel.classList.remove("active"));
+          $(`${activeTab}Panel`).classList.add("active");
+          drawAllCharts();
+        });
+      });
+
+      $("habitDate").value = dateKey();
+      ["healthDate", "testDate", "shadowDate", "volunteerDate"].forEach((id) => $(id).value = dateKey());
+      $("habitDate").addEventListener("change", () => {
+        renderHabits();
+        drawMonthlyHabitChart();
+      });
+      $("prevHabitDay").addEventListener("click", () => shiftHabitDate(-1));
+      $("nextHabitDay").addEventListener("click", () => shiftHabitDate(1));
+      $("todayHabitDay").addEventListener("click", () => {
+        $("habitDate").value = dateKey();
+        renderHabits();
+        drawMonthlyHabitChart();
+      });
+
+      $("addHabitBtn").addEventListener("click", () => {
+        const name = $("customHabitName").value.trim();
+        if (!name) return;
+        state.customHabits.push({
+          id: uid("custom"),
+          name,
+          type: $("customHabitType").value,
+          target: number($("customHabitTarget").value, 0)
+        });
+        $("customHabitName").value = "";
+        $("customHabitTarget").value = "";
+        saveState("habits");
+      });
+
+      $("addHealthBtn").addEventListener("click", () => {
+        if (!$("healthDate").value) return;
+        state.healthLogs.push({
+          id: uid("health"),
+          date: $("healthDate").value,
+          weight: $("healthWeight").value,
+          workoutType: $("workoutType").value,
+          duration: $("workoutDuration").value,
+          sleep: $("healthSleep").value,
+          notes: $("healthNotes").value.trim()
+        });
+        ["healthWeight", "workoutDuration", "healthSleep", "healthNotes"].forEach((id) => $(id).value = "");
+        saveState("health");
+      });
+
+      $("addTestBtn").addEventListener("click", () => {
+        if (!$("testDate").value || !$("testTotal").value) return;
+        state.practiceTests.push({
+          id: uid("test"),
+          date: $("testDate").value,
+          total: $("testTotal").value,
+          bb: $("testBB").value,
+          cp: $("testCP").value,
+          ps: $("testPS").value,
+          cars: $("testCARS").value,
+          notes: $("testNotes").value.trim()
+        });
+        ["testTotal", "testBB", "testCP", "testPS", "testCARS", "testNotes"].forEach((id) => $(id).value = "");
+        saveState("mcat");
+      });
+
+      $("addShadowBtn").addEventListener("click", () => {
+        if (!$("shadowDate").value || !$("shadowHours").value) return;
+        state.shadowing.push({
+          id: uid("shadow"),
+          date: $("shadowDate").value,
+          doctor: $("doctorName").value.trim(),
+          specialty: $("doctorSpecialty").value.trim(),
+          hours: $("shadowHours").value,
+          notes: $("shadowNotes").value.trim()
+        });
+        ["doctorName", "doctorSpecialty", "shadowHours", "shadowNotes"].forEach((id) => $(id).value = "");
+        saveState("career");
+      });
+
+      $("addVolunteerBtn").addEventListener("click", () => {
+        if (!$("volunteerDate").value || !$("volunteerHours").value) return;
+        state.volunteering.push({
+          id: uid("volunteer"),
+          date: $("volunteerDate").value,
+          place: $("volunteerPlace").value.trim(),
+          hours: $("volunteerHours").value,
+          notes: $("volunteerNotes").value.trim()
+        });
+        ["volunteerPlace", "volunteerHours", "volunteerNotes"].forEach((id) => $(id).value = "");
+        saveState("career");
+      });
+
+      $("addTodoBtn").addEventListener("click", () => {
+        const text = $("todoInput").value.trim();
+        if (!text) return;
+        const list = state.todos.lists.find((item) => item.id === activeListId);
+        list.items.push({ id: uid("todo"), text, category: $("todoCategory").value, done: false });
+        $("todoInput").value = "";
+        saveState("todo");
+      });
+
+      $("todoInput").addEventListener("keydown", (event) => {
+        if (event.key === "Enter") $("addTodoBtn").click();
+      });
+
+      $("settingsBtn").addEventListener("click", () => {
+        $("settingsName").value = state.settings.name || "Inderpal";
+        $("settingsStartWeight").value = state.settings.startWeight || 220;
+        $("settingsWeightGoal").value = state.settings.weightGoal || 190;
+        openModal("settingsModal");
+      });
+      ["closeSettings", "cancelSettings"].forEach((id) => $(id).addEventListener("click", () => closeModal("settingsModal")));
+      $("saveSettings").addEventListener("click", () => {
+        state.settings.name = $("settingsName").value.trim() || "Inderpal";
+        state.settings.startWeight = number($("settingsStartWeight").value, 220);
+        state.settings.weightGoal = number($("settingsWeightGoal").value, 190);
+        closeModal("settingsModal");
+        saveState("health");
+      });
+
+      $("createListBtn").addEventListener("click", () => {
+        $("newListName").value = "";
+        openModal("listModal");
+      });
+      ["closeListModal", "cancelList"].forEach((id) => $(id).addEventListener("click", () => closeModal("listModal")));
+      $("saveList").addEventListener("click", () => {
+        const name = $("newListName").value.trim();
+        if (!name) return;
+        const list = { id: uid("list"), name, items: [] };
+        state.todos.lists.push(list);
+        activeListId = list.id;
+        closeModal("listModal");
+        saveState("todo");
+      });
+
+      document.querySelectorAll(".modal").forEach((modal) => {
+        modal.addEventListener("click", (event) => {
+          if (event.target === modal) closeModal(modal.id);
+        });
+      });
+
+      window.addEventListener("resize", drawAllCharts);
+    }
+
+    function unlockDashboard() {
+      if (dashboardStarted) return;
+      dashboardStarted = true;
+      $("loginGate").hidden = true;
+      document.body.classList.remove("auth-locked");
+      state = loadState();
+      activeListId = state.todos.activeListId || state.todos.lists[0].id;
+      initEvents();
+      renderCountdown();
+      renderAll();
+      countdownTimer = setInterval(renderCountdown, 1000);
+    }
+
+    function initPasswordGate() {
+      if (localStorage.getItem(AUTH_KEY) === "unlocked") {
+        unlockDashboard();
+        return;
+      }
+
+      $("loginForm").addEventListener("submit", (event) => {
+        event.preventDefault();
+        if ($("passwordInput").value === DASHBOARD_PASSWORD) {
+          localStorage.setItem(AUTH_KEY, "unlocked");
+          unlockDashboard();
+          return;
+        }
+        $("loginError").textContent = "Incorrect password.";
+        $("passwordInput").value = "";
+        $("passwordInput").focus();
+      });
+    }
+
+    initPasswordGate();
+  </script>
+</body>
+</html>

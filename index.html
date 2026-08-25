@@ -558,6 +558,38 @@
       padding: 7px 10px;
     }
 
+    .choice-group {
+      display: flex;
+      gap: 6px;
+    }
+
+    .choice-btn {
+      flex: 1;
+      min-height: 36px;
+      border: 1px solid var(--line-strong);
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.045);
+      color: var(--muted);
+      font-weight: 800;
+      font-size: 0.82rem;
+      transition: color 160ms ease, background 160ms ease, border-color 160ms ease;
+    }
+
+    .choice-btn.active {
+      color: #050505;
+      background: var(--white);
+      border-color: var(--white);
+    }
+
+    .habit-group-heading {
+      margin: 18px 0 8px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted-2);
+    }
+
     .date-controls {
       display: grid;
       grid-template-columns: auto minmax(150px, 1fr) auto auto;
@@ -1120,7 +1152,6 @@
       <button class="tab-button active" data-tab="habits">Daily Habits</button>
       <button class="tab-button" data-tab="health">Health Log</button>
       <button class="tab-button" data-tab="mcat">MCAT Tracker</button>
-      <button class="tab-button" data-tab="career">Career Log</button>
       <button class="tab-button" data-tab="todo">To-Do List <span class="count" id="todoTabCount">0</span></button>
     </nav>
 
@@ -1133,22 +1164,6 @@
           </div>
           <div class="last-updated" id="habitsUpdated">Last updated: never</div>
         </div>
-
-        <details class="tips-card">
-          <summary>
-            <span class="tip-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6"></path><path d="M10 22h4"></path><path d="M12 2a7 7 0 0 0-4 12.74V17h8v-2.26A7 7 0 0 0 12 2Z"></path></svg></span>
-            <span>Tips &amp; Guidance</span>
-            <span class="tip-chevron">v</span>
-          </summary>
-          <ul>
-            <li>Sleep: 7-8 hrs minimum. Poor sleep kills gym performance, MCAT focus, and willpower. Fix sleep before fixing anything else.</li>
-            <li>CARS: Cannot be crammed. Read 1 passage every single day &mdash; this is the only way to improve this section. Never skip it.</li>
-            <li>Steps: 10k steps is the goal. If you're under, a 20 min walk fixes it. Movement improves focus and mood.</li>
-            <li>Protein: Target 160g/day as a vegetarian. Prioritize tofu, cottage cheese, Greek yogurt, lentils, paneer.</li>
-            <li>Calories: 2,200/day for a cut at 6'1". Don't go lower &mdash; you need fuel for the gym and MCAT prep.</li>
-            <li>Gym: Even 45 minutes counts. Showing up is the whole game.</li>
-          </ul>
-        </details>
 
         <div class="grid two">
           <div class="card hero-card">
@@ -1185,12 +1200,23 @@
                 Target
                 <input id="customHabitTarget" type="number" min="0" placeholder="Optional">
               </label>
+              <label>
+                Section
+                <select id="customHabitGroup">
+                  <option value="body">Body</option>
+                  <option value="mind">Education</option>
+                </select>
+              </label>
               <button class="primary span-4" id="addHabitBtn">Add Habit</button>
             </div>
           </div>
         </div>
 
-        <div class="habits-grid mt" id="habitsGrid"></div>
+        <div class="habit-group-heading mt">Body</div>
+        <div class="habits-grid" id="habitsGridBody"></div>
+
+        <div class="habit-group-heading">Education</div>
+        <div class="habits-grid" id="habitsGridMind"></div>
 
         <div class="card mt">
           <div class="panel-head">
@@ -1214,21 +1240,6 @@
           <div class="last-updated" id="healthUpdated">Last updated: never</div>
         </div>
 
-        <details class="tips-card">
-          <summary>
-            <span class="tip-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6"></path><path d="M10 22h4"></path><path d="M12 2a7 7 0 0 0-4 12.74V17h8v-2.26A7 7 0 0 0 12 2Z"></path></svg></span>
-            <span>Tips &amp; Guidance</span>
-            <span class="tip-chevron">v</span>
-          </summary>
-          <ul>
-            <li>Weigh yourself same time every morning, after bathroom, before eating. That's the only consistent number.</li>
-            <li>Expect weight to fluctuate 2-3 lbs day to day &mdash; that's water, not fat. Look at the weekly trend not the daily number.</li>
-            <li>To lose 30 lbs by May 2027: you need to lose roughly 2 lbs/month. That's very doable with gym + diet.</li>
-            <li>Ankle mobility: do the wall drill every single morning. 10 reps each foot. This fixes squat depth and heel pain on hikes.</li>
-            <li>Meal prep Sunday: set up the week so junk food isn't even an option on busy days.</li>
-          </ul>
-        </details>
-
         <div class="grid four" id="healthStats"></div>
 
         <div class="grid two mt">
@@ -1246,9 +1257,8 @@
               <label>
                 Workout
                 <select id="workoutType">
-                  <option>Push</option>
-                  <option>Pull</option>
-                  <option>Legs</option>
+                  <option>Upper</option>
+                  <option>Lower</option>
                   <option>Rest</option>
                   <option>Cardio</option>
                   <option>Hike</option>
@@ -1294,7 +1304,7 @@
         <div class="panel-head">
           <div>
             <h2>MCAT Tracker</h2>
-            <p class="subtle">Countdown to June 1, 2027, with practice test momentum.</p>
+            <p class="subtle" id="mcatSubtitle">Countdown to test day, with practice test momentum.</p>
           </div>
           <div class="last-updated" id="mcatUpdated">Last updated: never</div>
         </div>
@@ -1306,10 +1316,10 @@
             <span class="tip-chevron">v</span>
           </summary>
           <ul>
-            <li>Phase 1 (Now - Aug 2026): Buy Kaplan 7-Book Set 2026-2027 (~$160). Read 1 chapter/day. Watch Khan Academy MCAT videos alongside. Build Anki flashcard deck as you go. 1 hr/day max &mdash; don't burn out.</li>
-            <li>Phase 2 (Aug - Dec 2026): School comes first. Keep Anki going 10 min/day. Keep CARS streak alive. Finish all Kaplan books by December.</li>
-            <li>Phase 3 (Jan - Apr 2027): Buy AAMC official materials (~$350). 4-6 hrs/day. Full-length practice test every 2 weeks. Review wrong answers &mdash; this is where the score gains happen.</li>
-            <li>Phase 4 (2 weeks before): Stop new content. Trust your prep. Sleep 8 hrs every night. Bring snacks on test day &mdash; it's 7.5 hours.</li>
+            <li>Phase 1 (Aug 26 - early Oct 2026, ~6 weeks): Content review. Read 1 chapter/day from your Kaplan books, Khan Academy MCAT videos alongside, build your Anki deck as you go. Classes are starting too, so keep this to 1 hr/day.</li>
+            <li>Phase 2 (Oct - Dec 2026): School comes first. Keep Anki going 10 min/day. Keep the CARS streak alive. Finish any remaining content review by December.</li>
+            <li>Phase 3 (Jan - Feb 2027): Buy AAMC official materials. Full-length practice test every 1-2 weeks. Review wrong answers &mdash; this is where the score gains happen.</li>
+            <li>Phase 4 (last 2 weeks before test): Stop new content. Trust your prep. Sleep 8 hrs every night. Bring snacks on test day &mdash; it's 7.5 hours.</li>
             <li>Your strongest section: B/B (Biology/Biochem) &mdash; you're a micro major, lean into this.</li>
             <li>Your weakest section: C/P (Chem/Physics) &mdash; you had C's here. Start your content review with this section.</li>
             <li>CARS tip: Read dense nonfiction daily. News articles, philosophy, history. Anything that makes you think critically.</li>
@@ -1318,16 +1328,16 @@
         </details>
 
         <div class="card">
-          <div class="kicker">Countdown to June 1, 2027</div>
+          <div class="kicker" id="countdownKicker">Countdown to test day</div>
           <div class="countdown mt" id="countdown"></div>
         </div>
 
         <div class="targets mt">
-          <div class="target"><span class="subtle">B/B</span><strong>128+</strong></div>
-          <div class="target"><span class="subtle">C/P</span><strong>127+</strong></div>
-          <div class="target"><span class="subtle">P/S</span><strong>127+</strong></div>
-          <div class="target"><span class="subtle">CARS</span><strong>129+</strong></div>
-          <div class="target"><span class="subtle">Total for MD</span><strong>511+</strong></div>
+          <div class="target"><span class="subtle">B/B</span><strong id="targetBB">128+</strong></div>
+          <div class="target"><span class="subtle">C/P</span><strong id="targetCP">127+</strong></div>
+          <div class="target"><span class="subtle">P/S</span><strong id="targetPS">127+</strong></div>
+          <div class="target"><span class="subtle">CARS</span><strong id="targetCARS">129+</strong></div>
+          <div class="target"><span class="subtle">Total for MD</span><strong id="targetTotal">511+</strong></div>
         </div>
 
         <div class="grid two mt">
@@ -1384,101 +1394,6 @@
         </div>
       </section>
 
-      <section class="tab-panel" id="careerPanel">
-        <div class="panel-head">
-          <div>
-            <h2>Career Log</h2>
-            <p class="subtle">Shadowing and volunteering hours with totals that stay put.</p>
-          </div>
-          <div class="last-updated" id="careerUpdated">Last updated: never</div>
-        </div>
-
-        <details class="tips-card">
-          <summary>
-            <span class="tip-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6"></path><path d="M10 22h4"></path><path d="M12 2a7 7 0 0 0-4 12.74V17h8v-2.26A7 7 0 0 0 12 2Z"></path></svg></span>
-            <span>Tips &amp; Guidance</span>
-            <span class="tip-chevron">v</span>
-          </summary>
-          <ul>
-            <li>MD Shadowing target: 100-200 hours for MD/DO applications. You currently have ~1 hour. Aim for 2 shifts per week this summer. That gets you to 50+ hours by fall.</li>
-            <li>Volunteering: Most medical schools want 50-150 volunteer hours. Start now &mdash; apply to local hospitals, free clinics, food banks.</li>
-            <li>Your CNA hours (2,330+) are a massive advantage. Most applicants spend years building clinical experience. You already have it.</li>
-            <li>When shadowing: observe how the doctor communicates with patients, makes decisions, handles difficult situations. These become your medical school interview stories.</li>
-            <li>Application timeline: Applications open June 2027. Everything needs to be in order before then &mdash; MCAT score, hours, personal statement, letters of recommendation.</li>
-            <li>Letters of recommendation: Start building relationships with professors and the doctor you're shadowing NOW. You'll need 3-4 strong letters.</li>
-          </ul>
-        </details>
-
-        <div class="grid two">
-          <div class="card">
-            <h3>MD Shadowing Log</h3>
-            <div class="big-number" id="shadowTotal">0h</div>
-            <div class="progress"><span id="shadowProgress"></span></div>
-            <p class="subtle">Progress toward 100-hour goal</p>
-            <div class="form-grid mt">
-              <label>
-                Date
-                <input type="date" id="shadowDate">
-              </label>
-              <label>
-                Doctor
-                <input id="doctorName" placeholder="Dr. Patel">
-              </label>
-              <label>
-                Specialty
-                <input id="doctorSpecialty" placeholder="Cardiology">
-              </label>
-              <label>
-                Hours
-                <input type="number" id="shadowHours" min="0" step="0.25" placeholder="4">
-              </label>
-              <label class="span-3">
-                Notes
-                <input id="shadowNotes" placeholder="Cases observed, takeaways">
-              </label>
-              <button class="primary" id="addShadowBtn">Add</button>
-            </div>
-            <div class="table-wrap mt">
-              <table>
-                <thead><tr><th>Date</th><th>Doctor</th><th>Specialty</th><th>Hours</th><th>Notes</th><th></th></tr></thead>
-                <tbody id="shadowTable"></tbody>
-              </table>
-            </div>
-          </div>
-
-          <div class="card">
-            <h3>Volunteering Log</h3>
-            <div class="big-number" id="volunteerTotal">0h</div>
-            <p class="subtle">Running total volunteer hours</p>
-            <div class="form-grid mt">
-              <label>
-                Date
-                <input type="date" id="volunteerDate">
-              </label>
-              <label class="span-2">
-                Organization / Place
-                <input id="volunteerPlace" placeholder="Community clinic">
-              </label>
-              <label>
-                Hours
-                <input type="number" id="volunteerHours" min="0" step="0.25" placeholder="3">
-              </label>
-              <label class="span-3">
-                Notes
-                <input id="volunteerNotes" placeholder="Role, impact, people served">
-              </label>
-              <button class="primary" id="addVolunteerBtn">Add</button>
-            </div>
-            <div class="table-wrap mt">
-              <table>
-                <thead><tr><th>Date</th><th>Organization</th><th>Hours</th><th>Notes</th><th></th></tr></thead>
-                <tbody id="volunteerTable"></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </section>
-
       <section class="tab-panel" id="todoPanel">
         <div class="panel-head">
           <div>
@@ -1487,20 +1402,6 @@
           </div>
           <div class="last-updated" id="todoUpdated">Last updated: never</div>
         </div>
-
-        <details class="tips-card">
-          <summary>
-            <span class="tip-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6"></path><path d="M10 22h4"></path><path d="M12 2a7 7 0 0 0-4 12.74V17h8v-2.26A7 7 0 0 0 12 2Z"></path></svg></span>
-            <span>Tips &amp; Guidance</span>
-            <span class="tip-chevron">v</span>
-          </summary>
-          <ul>
-            <li>Review your to-do list every morning when you open the dashboard.</li>
-            <li>Keep it under 5 active tasks per day &mdash; more than that and nothing gets done.</li>
-            <li>If a task has been sitting undone for 2+ weeks, either do it today or delete it.</li>
-            <li>Suggested lists to create: MCAT Application Checklist, Pre-Med Requirements, Summer Goals, Weekly Tasks.</li>
-          </ul>
-        </details>
 
         <div class="todo-layout">
           <aside class="card compact">
@@ -1558,6 +1459,16 @@
           <input type="number" id="settingsWeightGoal" min="0" step="0.1">
         </label>
       </div>
+      <div class="grid two mt">
+        <label>
+          MCAT test date
+          <input type="date" id="settingsMcatDate">
+        </label>
+        <label>
+          MCAT target score
+          <input type="number" id="settingsMcatTarget" min="472" max="528" step="1">
+        </label>
+      </div>
       <div class="modal-actions">
         <button class="secondary" id="cancelSettings">Cancel</button>
         <button class="primary" id="saveSettings">Save Settings</button>
@@ -1587,21 +1498,29 @@
     const DASHBOARD_PASSWORD = "Anoop2013#";
     const STORE_KEY = "inderpalLifeDashboard.v1";
     const TODAY = new Date();
-    const targetMcatDate = new Date("2027-06-01T00:00:00");
+    const DEFAULT_MCAT_DATE = "2027-03-15";
+    const DEFAULT_MCAT_TARGET = 515;
+    const BASE_MCAT_TARGET = 511;
+    const BASE_MCAT_SECTIONS = { bb: 128, cp: 127, ps: 127, cars: 129 };
+
+    function getMcatDate() {
+      const raw = (state && state.settings && state.settings.mcatTestDate) || DEFAULT_MCAT_DATE;
+      return new Date(`${raw}T00:00:00`);
+    }
 
     const defaultHabits = [
-      { id: "gym", name: "Gym", type: "checkbox", targetText: "Done / not done" },
-      { id: "sleep", name: "Sleep", type: "number", target: 7, unit: "hrs", rule: "min", targetText: "Minimum 7 hrs" },
-      { id: "cars", name: "CARS Passage", type: "checkbox", targetText: "Done / not done" },
-      { id: "mcatStudy", name: "MCAT Study", type: "combo", unit: "min", targetText: "Checkbox + minutes studied" },
-      { id: "journal", name: "Journal", type: "checkbox", targetText: "Done / not done" },
-      { id: "steps", name: "Steps", type: "number", target: 10000, unit: "steps", rule: "min", targetText: "Minimum 10,000" },
-      { id: "protein", name: "Protein", type: "number", target: 160, unit: "g", rule: "min", targetText: "Target 160g/day" },
-      { id: "calories", name: "Calories", type: "number", target: 2200, unit: "cal", rule: "max", targetText: "Target 2,200 cal/day cutting" }
+      { id: "sleep", name: "Sleep", type: "number", target: 7, unit: "hrs", rule: "min", targetText: "Minimum 7 hrs", group: "body" },
+      { id: "steps", name: "Steps", type: "number", target: 10000, unit: "steps", rule: "min", targetText: "Minimum 10,000", group: "body" },
+      { id: "protein", name: "Protein", type: "number", target: 160, unit: "g", rule: "min", targetText: "Target 160g/day", group: "body" },
+      { id: "gym", name: "Gym", type: "choice", options: ["Upper", "Lower"], targetText: "Upper or Lower split", group: "body" },
+      { id: "supplement", name: "Supplement", type: "checkbox", targetText: "Done / not done", group: "body" },
+      { id: "cars", name: "CARS Passage", type: "checkbox", targetText: "Done / not done", group: "mind" },
+      { id: "mcatStudy", name: "MCAT Study", type: "combo", unit: "min", targetText: "Checkbox + minutes studied", group: "mind" },
+      { id: "journal", name: "Journal", type: "checkbox", targetText: "Done / not done", group: "mind" }
     ];
 
     const categories = ["All", "Active", "Completed", "Health", "MCAT", "Career", "Habit", "General"];
-    const workoutTypes = ["Push", "Pull", "Legs", "Rest", "Cardio", "Hike", "Other"];
+    const workoutTypes = ["Upper", "Lower", "Rest", "Cardio", "Hike", "Other"];
 
     let state;
     let activeTab = "habits";
@@ -1614,13 +1533,11 @@
 
     function loadState() {
       const fallback = {
-        settings: { name: "Inderpal", startWeight: 220, weightGoal: 190 },
+        settings: { name: "Inderpal", startWeight: 220, weightGoal: 190, mcatTestDate: DEFAULT_MCAT_DATE, mcatTargetScore: DEFAULT_MCAT_TARGET },
         customHabits: [],
         habits: {},
         healthLogs: [],
         practiceTests: [],
-        shadowing: [],
-        volunteering: [],
         todos: {
           activeListId: "main",
           lists: [{ id: "main", name: "Main List", items: [] }]
@@ -1681,6 +1598,7 @@
         ...defaultHabits,
         ...state.customHabits.map((habit) => ({
           ...habit,
+          group: habit.group || "body",
           targetText: habit.type === "number" && habit.target ? `Target ${habit.target}` : "Custom habit"
         }))
       ];
@@ -1701,6 +1619,7 @@
       if (!entry) return false;
       if (habit.type === "checkbox") return Boolean(entry.done);
       if (habit.type === "combo") return Boolean(entry.done);
+      if (habit.type === "choice") return Boolean(entry.value);
       const value = number(entry.value, NaN);
       if (!Number.isFinite(value) || value <= 0) return false;
       if (habit.rule === "max") return value <= habit.target;
@@ -1721,7 +1640,6 @@
       renderHabits();
       renderHealth();
       renderMcat();
-      renderCareer();
       renderTodos();
       drawAllCharts();
     }
@@ -1736,7 +1654,7 @@
     }
 
     function renderUpdated() {
-      ["habits", "health", "mcat", "career", "todo"].forEach((tab) => {
+      ["habits", "health", "mcat", "todo"].forEach((tab) => {
         $(`${tab}Updated`).textContent = `Last updated: ${prettyDate(state.lastUpdated[tab])}`;
       });
     }
@@ -1756,40 +1674,59 @@
       return streak;
     }
 
+    function habitCardHtml(habit, day) {
+      const entry = day[habit.id] || { done: false, value: "" };
+      const complete = isHabitComplete(habit, entry);
+      const canRemove = habit.id.startsWith("custom-");
+      const checkControl = habit.type === "choice"
+        ? `<span class="check-indicator ${complete ? "active" : ""}" aria-hidden="true">${complete ? "✓" : ""}</span>`
+        : habit.type !== "number"
+          ? `<button class="check-toggle ${entry.done ? "active" : ""}" data-habit-toggle="${habit.id}" aria-label="Toggle ${escapeHtml(habit.name)}">${entry.done ? "✓" : ""}</button>`
+          : `<span class="check-indicator ${complete ? "active" : ""}" aria-hidden="true">${complete ? "✓" : ""}</span>`;
+      const choiceControl = habit.type === "choice"
+        ? `<div class="choice-group">${(habit.options || []).map((option) => `<button type="button" class="choice-btn ${entry.value === option ? "active" : ""}" data-habit-choice="${habit.id}" data-choice-value="${escapeAttr(option)}">${escapeHtml(option)}</button>`).join("")}</div>`
+        : "";
+      return `
+        <article class="habit-card ${complete ? "done" : ""}">
+          ${checkControl}
+          <div class="habit-top">
+            <div>
+              <div class="habit-name">${escapeHtml(habit.name)}</div>
+              <div class="habit-target">${escapeHtml(habit.targetText || "")}</div>
+            </div>
+          </div>
+          <div class="habit-inputs">
+            ${habit.type === "number" || habit.type === "combo" ? `<input type="number" min="0" value="${escapeAttr(entry.value || "")}" placeholder="${habit.unit ? `Actual ${habit.unit}` : "Actual value"}" data-habit-value="${habit.id}">` : ""}
+            ${choiceControl}
+          </div>
+          ${canRemove ? `<button class="danger" data-remove-habit="${habit.id}">Remove</button>` : `<span></span>`}
+        </article>
+      `;
+    }
+
     function renderHabits() {
       const selectedDate = $("habitDate").value || dateKey();
       const day = getDayHabits(selectedDate);
       const habits = allHabits();
       renderHabitScore();
-      $("habitsGrid").innerHTML = habits.map((habit) => {
-        const entry = day[habit.id] || { done: false, value: "" };
-        const complete = isHabitComplete(habit, entry);
-        const canRemove = habit.id.startsWith("custom-");
-        const checkControl = habit.type !== "number"
-          ? `<button class="check-toggle ${entry.done ? "active" : ""}" data-habit-toggle="${habit.id}" aria-label="Toggle ${escapeHtml(habit.name)}">${entry.done ? "✓" : ""}</button>`
-          : `<span class="check-indicator ${complete ? "active" : ""}" aria-hidden="true">${complete ? "✓" : ""}</span>`;
-        return `
-          <article class="habit-card ${complete ? "done" : ""}">
-            ${checkControl}
-            <div class="habit-top">
-              <div>
-                <div class="habit-name">${escapeHtml(habit.name)}</div>
-                <div class="habit-target">${escapeHtml(habit.targetText || "")}</div>
-              </div>
-            </div>
-            <div class="habit-inputs">
-              ${habit.type === "number" || habit.type === "combo" ? `<input type="number" min="0" value="${escapeAttr(entry.value || "")}" placeholder="${habit.unit ? `Actual ${habit.unit}` : "Actual value"}" data-habit-value="${habit.id}">` : ""}
-            </div>
-            ${canRemove ? `<button class="danger" data-remove-habit="${habit.id}">Remove</button>` : `<span></span>`}
-          </article>
-        `;
-      }).join("");
+      $("habitsGridBody").innerHTML = habits.filter((habit) => (habit.group || "body") === "body").map((habit) => habitCardHtml(habit, day)).join("");
+      $("habitsGridMind").innerHTML = habits.filter((habit) => habit.group === "mind").map((habit) => habitCardHtml(habit, day)).join("");
 
       document.querySelectorAll("[data-habit-toggle]").forEach((button) => {
         button.addEventListener("click", () => {
           const id = button.dataset.habitToggle;
           const entry = habitEntry($("habitDate").value, id);
           entry.done = !entry.done;
+          saveState("habits");
+        });
+      });
+
+      document.querySelectorAll("[data-habit-choice]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const id = button.dataset.habitChoice;
+          const entry = habitEntry($("habitDate").value, id);
+          entry.value = entry.value === button.dataset.choiceValue ? "" : button.dataset.choiceValue;
+          entry.done = Boolean(entry.value);
           saveState("habits");
         });
       });
@@ -1889,10 +1826,26 @@
           saveState("mcat");
         });
       });
+
+      const targetTotal = number(state.settings.mcatTargetScore, DEFAULT_MCAT_TARGET);
+      const scale = targetTotal / BASE_MCAT_TARGET;
+      const bb = Math.round(BASE_MCAT_SECTIONS.bb * scale);
+      const cp = Math.round(BASE_MCAT_SECTIONS.cp * scale);
+      const ps = Math.round(BASE_MCAT_SECTIONS.ps * scale);
+      const cars = Math.round(BASE_MCAT_SECTIONS.cars * scale);
+      $("targetBB").textContent = `${bb}+`;
+      $("targetCP").textContent = `${cp}+`;
+      $("targetPS").textContent = `${ps}+`;
+      $("targetCARS").textContent = `${cars}+`;
+      $("targetTotal").textContent = `${targetTotal}+`;
+
+      const mcatDateText = getMcatDate().toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" });
+      $("mcatSubtitle").textContent = `Countdown to ${mcatDateText}, with practice test momentum.`;
+      $("countdownKicker").textContent = `Countdown to ${mcatDateText}`;
     }
 
     function renderCountdown() {
-      const diff = Math.max(0, targetMcatDate - new Date());
+      const diff = Math.max(0, getMcatDate() - new Date());
       const days = Math.floor(diff / 86400000);
       const hours = Math.floor((diff % 86400000) / 3600000);
       const minutes = Math.floor((diff % 3600000) / 60000);
@@ -1903,54 +1856,6 @@
         ["Minutes", minutes],
         ["Seconds", seconds]
       ].map(([label, value]) => `<div class="time-box"><strong>${String(value).padStart(label === "Days" ? 1 : 2, "0")}</strong><span>${label}</span></div>`).join("");
-    }
-
-    function renderCareer() {
-      const shadowTotal = state.shadowing.reduce((sum, entry) => sum + number(entry.hours), 0);
-      const volunteerTotal = state.volunteering.reduce((sum, entry) => sum + number(entry.hours), 0);
-      $("shadowTotal").textContent = `${formatNumber(shadowTotal, 1)}h`;
-      $("shadowProgress").style.width = `${Math.min(100, shadowTotal)}%`;
-      $("volunteerTotal").textContent = `${formatNumber(volunteerTotal, 1)}h`;
-
-      $("shadowTable").innerHTML = state.shadowing.length ? state.shadowing
-        .slice()
-        .sort((a, b) => b.date.localeCompare(a.date))
-        .map((entry) => `
-          <tr>
-            <td>${escapeHtml(entry.date)}</td>
-            <td>${escapeHtml(entry.doctor)}</td>
-            <td>${escapeHtml(entry.specialty)}</td>
-            <td>${escapeHtml(entry.hours)}</td>
-            <td>${escapeHtml(entry.notes || "")}</td>
-            <td><button class="small-delete" data-delete-shadow="${entry.id}">x</button></td>
-          </tr>
-        `).join("") : `<tr><td colspan="6"><div class="empty">No shadowing entries yet.</div></td></tr>`;
-
-      $("volunteerTable").innerHTML = state.volunteering.length ? state.volunteering
-        .slice()
-        .sort((a, b) => b.date.localeCompare(a.date))
-        .map((entry) => `
-          <tr>
-            <td>${escapeHtml(entry.date)}</td>
-            <td>${escapeHtml(entry.place)}</td>
-            <td>${escapeHtml(entry.hours)}</td>
-            <td>${escapeHtml(entry.notes || "")}</td>
-            <td><button class="small-delete" data-delete-volunteer="${entry.id}">x</button></td>
-          </tr>
-        `).join("") : `<tr><td colspan="5"><div class="empty">No volunteering entries yet.</div></td></tr>`;
-
-      document.querySelectorAll("[data-delete-shadow]").forEach((button) => {
-        button.addEventListener("click", () => {
-          state.shadowing = state.shadowing.filter((entry) => entry.id !== button.dataset.deleteShadow);
-          saveState("career");
-        });
-      });
-      document.querySelectorAll("[data-delete-volunteer]").forEach((button) => {
-        button.addEventListener("click", () => {
-          state.volunteering = state.volunteering.filter((entry) => entry.id !== button.dataset.deleteVolunteer);
-          saveState("career");
-        });
-      });
     }
 
     function renderTodos() {
@@ -2280,7 +2185,7 @@
       });
 
       $("habitDate").value = dateKey();
-      ["healthDate", "testDate", "shadowDate", "volunteerDate"].forEach((id) => $(id).value = dateKey());
+      ["healthDate", "testDate"].forEach((id) => $(id).value = dateKey());
       $("habitDate").addEventListener("change", () => {
         renderHabits();
         drawMonthlyHabitChart();
@@ -2300,7 +2205,8 @@
           id: uid("custom"),
           name,
           type: $("customHabitType").value,
-          target: number($("customHabitTarget").value, 0)
+          target: number($("customHabitTarget").value, 0),
+          group: $("customHabitGroup").value
         });
         $("customHabitName").value = "";
         $("customHabitTarget").value = "";
@@ -2338,33 +2244,6 @@
         saveState("mcat");
       });
 
-      $("addShadowBtn").addEventListener("click", () => {
-        if (!$("shadowDate").value || !$("shadowHours").value) return;
-        state.shadowing.push({
-          id: uid("shadow"),
-          date: $("shadowDate").value,
-          doctor: $("doctorName").value.trim(),
-          specialty: $("doctorSpecialty").value.trim(),
-          hours: $("shadowHours").value,
-          notes: $("shadowNotes").value.trim()
-        });
-        ["doctorName", "doctorSpecialty", "shadowHours", "shadowNotes"].forEach((id) => $(id).value = "");
-        saveState("career");
-      });
-
-      $("addVolunteerBtn").addEventListener("click", () => {
-        if (!$("volunteerDate").value || !$("volunteerHours").value) return;
-        state.volunteering.push({
-          id: uid("volunteer"),
-          date: $("volunteerDate").value,
-          place: $("volunteerPlace").value.trim(),
-          hours: $("volunteerHours").value,
-          notes: $("volunteerNotes").value.trim()
-        });
-        ["volunteerPlace", "volunteerHours", "volunteerNotes"].forEach((id) => $(id).value = "");
-        saveState("career");
-      });
-
       $("addTodoBtn").addEventListener("click", () => {
         const text = $("todoInput").value.trim();
         if (!text) return;
@@ -2382,6 +2261,8 @@
         $("settingsName").value = state.settings.name || "Inderpal";
         $("settingsStartWeight").value = state.settings.startWeight || 220;
         $("settingsWeightGoal").value = state.settings.weightGoal || 190;
+        $("settingsMcatDate").value = state.settings.mcatTestDate || DEFAULT_MCAT_DATE;
+        $("settingsMcatTarget").value = state.settings.mcatTargetScore || DEFAULT_MCAT_TARGET;
         openModal("settingsModal");
       });
       ["closeSettings", "cancelSettings"].forEach((id) => $(id).addEventListener("click", () => closeModal("settingsModal")));
@@ -2389,7 +2270,10 @@
         state.settings.name = $("settingsName").value.trim() || "Inderpal";
         state.settings.startWeight = number($("settingsStartWeight").value, 220);
         state.settings.weightGoal = number($("settingsWeightGoal").value, 190);
+        state.settings.mcatTestDate = $("settingsMcatDate").value || DEFAULT_MCAT_DATE;
+        state.settings.mcatTargetScore = number($("settingsMcatTarget").value, DEFAULT_MCAT_TARGET);
         closeModal("settingsModal");
+        renderCountdown();
         saveState("health");
       });
 
